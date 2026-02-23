@@ -84,7 +84,6 @@ public class CodeGroupController {
 	 */
 	@GetMapping("/list")
 	public void list(Model model) throws Exception {
-		log.info("model.addAttribute = " + model.addAttribute("msg"));
 		model.addAttribute("list", service.list());
 	}
 }
