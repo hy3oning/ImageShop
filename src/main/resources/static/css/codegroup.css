@@ -1,5 +1,171 @@
-@charset "UTF-8";
+/* ===================================================
+   통합 디자인 스타일 (Home + 게시판 공통)
+   =================================================== */
 
-table td {
-	text-align: center;
+/* 1. 전체 초기화 및 배경 (Home.css 감성 유지) */
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #1e293b;
+    /* 세련된 배경 그라데이션 */
+    background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 55%, #f8fafc 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* ✅ 2. 최상위 레이아웃 정렬 (모든 요소를 1000px 중앙으로 고정) */
+.header-wrapper, 
+.menu-wrapper, 
+.container, 
+.footer-wrapper,
+div[align="center"], 
+div[align="right"] {
+    max-width: 1000px !important;
+    width: calc(100% - 32px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* 헤더/메뉴 구분선 너비 고정 */
+hr {
+    max-width: 1000px;
+    border: 0;
+    height: 1px;
+    background: #cbd5e1;
+    margin: 15px auto;
+}
+
+/* 3. 메인 콘텐츠 박스 (컨테이너) */
+.container {
+    background: rgba(255, 255, 255, 0.85); /* 투명도 살짝 부여 */
+    backdrop-filter: blur(10px);           /* 뒤 배경 비치는 효과 */
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(2, 6, 23, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+/* 4. 홈 화면 전용 히어로 섹션 */
+.home-hero {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.home-hero h1 {
+    font-size: 2.5rem;
+    color: #1e293b;
+    margin-bottom: 10px;
+    letter-spacing: -0.03em;
+}
+
+/* 5. 제목 및 상단 버튼 배치 */
+h2 {
+    color: #0f172a;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 800;
+}
+
+.btn-new-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+/* 6. 테이블 디자인 (모던 리스트) */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 10px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    border: 1px solid #e2e8f0;
+}
+
+th {
+    background-color: #f8fafc;
+    color: #475569;
+    padding: 15px;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: center;
+}
+
+tr:last-child td { border-bottom: none; }
+
+tr:hover { background-color: #f1f7ff; }
+
+/* 7. 입력 폼 디자인 */
+.form-table td { text-align: left; } /* 폼 내부는 왼쪽 정렬 */
+
+input[type="text"], input[readonly] {
+    width: 100%;
+    max-width: 450px;
+    padding: 12px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+input[readonly] {
+    background-color: #f1f5f9;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+/* 8. 버튼 스타일 그룹 */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 35px;
+}
+
+button, .btn-new, .btn-link {
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+button:hover, .btn-new:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+#btnRegister, #btnModify, #btnEdit { background-color: #3b82f6; color: white; }
+#btnRemove { background-color: #ef4444; color: white; }
+#btnList { background-color: #64748b; color: white; }
+.btn-new { background-color: #10b981; color: white !important; }
+
+/* 9. 에러 메시지 */
+font[color="red"], .form-errors {
+    font-size: 13px;
+    color: #ef4444 !important;
+    display: block;
+    margin-top: 6px;
+    font-weight: 500;
 }
