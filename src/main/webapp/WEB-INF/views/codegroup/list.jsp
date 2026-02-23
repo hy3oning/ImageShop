@@ -6,6 +6,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <h2>
+	<jsp:include page="/WEB-INF/views/common/header.jsp" />
+	<jsp:include page="/WEB-INF/views/common/menu.jsp" />
 	<spring:message code="codegroup.header.list" />
 </h2>
 <a href="register"><spring:message code="action.new" /></a>
@@ -38,9 +40,12 @@
 		</c:otherwise>
 	</c:choose>
 </table>
+<jsp:include page="/WEB-INF/views/common/footer.jsp" />
 <script>
 	let result = "${msg}";
 	if (result === "SUCCESS") {
 		alert("<spring:message code='common.processSuccess' />");
+	} else if (result === "FAIL") {
+		alert("삭제처리 실패")
 	}
 </script>

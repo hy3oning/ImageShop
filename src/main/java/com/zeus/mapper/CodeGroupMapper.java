@@ -10,4 +10,8 @@ public interface CodeGroupMapper {
 	public List<CodeGroup> list() throws Exception;
 
 	public CodeGroup read(CodeGroup codeGroup) throws Exception;
+
+	public int modify(CodeGroup codeGroup) throws Exception;
+
+	public int remove(CodeGroup codeGroup);
 }

@@ -33,7 +33,18 @@
 		FROM CODE_GROUP
 		WHERE GROUP_CODE = #{groupCode}
 	</select>
-
+	<!-- 수정 처리 -->
+	<update id="update">
+		UPDATE CODE_GROUP
+		SET GROUP_NAME =#{groupName}
+		WHERE
+		GROUP_CODE =#{groupCode}
+	</update>
+	<!-- 삭제 처리 -->
+	<delete id="remove">
+		DELETE FROM CODE_GROUP
+		WHERE GROUP_CODE = #{groupCode}
+	</delete>
 
 
 </mapper>

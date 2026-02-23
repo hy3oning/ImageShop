@@ -82,4 +82,59 @@ public class CodeGroupController {
 		model.addAttribute(service.read(codeGroup));
 	}
 
+	/**
+	 * 코드 그룹 수정 화면 요청 처리.
+	 * 전달받은 식별자로 기존 데이터를 조회하여 Model에 담는다.
+	 *
+	 * @param codeGroup 조회할 코드 그룹 식별 정보
+	 * @param model View에 전달할 데이터 객체
+	 * @throws Exception 조회 중 예외 발생 시
+	 */
+	@GetMapping("/modify")
+	public void modifyForm(CodeGroup codeGroup, Model model) throws Exception {
+		model.addAttribute(service.read(codeGroup));
+	}
+
+	/**
+	 * 코드 그룹 수정 처리.
+	 * 전달받은 데이터를 기반으로 수정 후 목록 페이지로 redirect 한다.
+	 *
+	 * @param codeGroup 수정할 데이터 객체
+	 * @param rttr redirect 시 flash 메시지 전달 객체
+	 * @return 목록 페이지 redirect 경로
+	 * @throws Exception 수정 중 예외 발생 시
+	 */
+	@PostMapping("/modify")
+	public String modify(CodeGroup codeGroup, RedirectAttributes rttr) throws Exception {
+		int count = service.modify(codeGroup);
+		if (count > 0) {
+			rttr.addFlashAttribute("msg", "SUCCESS");
+		} else {
+			rttr.addFlashAttribute("msg", "FAIL");
+		}
+		return "redirect:/codegroup/list";
+	}
+
+	/**
+	 * 코드 그룹 삭제 처리.
+	 * 삭제 결과에 따라 flash 메시지를 설정하고 목록으로 redirect 한다.
+	 *
+	 * @param codeGroup 삭제할 데이터 객체
+	 * @param rttr redirect 시 flash 메시지 전달 객체
+	 * @return 목록 페이지 redirect 경로
+	 * @throws Exception 삭제 중 예외 발생 시
+	 */
+	@PostMapping("/remove")
+	public String remove(CodeGroup codeGroup, RedirectAttributes rttr) throws Exception {
+
+		int count = service.remove(codeGroup);
+
+		if (count > 0) {
+			rttr.addFlashAttribute("msg", "SUCCESS");
+		} else {
+			rttr.addFlashAttribute("msg", "FAIL");
+		}
+
+		return "redirect:/codegroup/list";
+	}
 }
