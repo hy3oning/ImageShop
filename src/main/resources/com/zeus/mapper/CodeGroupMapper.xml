@@ -34,7 +34,7 @@
 		WHERE GROUP_CODE = #{groupCode}
 	</select>
 	<!-- 수정 처리 -->
-	<update id="update">
+	<update id="modify">
 		UPDATE CODE_GROUP
 		SET GROUP_NAME =#{groupName}
 		WHERE
