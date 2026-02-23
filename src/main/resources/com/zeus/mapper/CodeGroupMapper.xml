@@ -24,6 +24,16 @@
 		ORDER BY GROUP_CODE DESC,
 		REG_DATE DESC
 	</select>
+	<!-- 상세 조회 -->
+	<select id="read" resultType="CodeGroup">
+		SELECT GROUP_CODE,
+		GROUP_NAME,
+		USE_YN,
+		REG_DATE
+		FROM CODE_GROUP
+		WHERE GROUP_CODE = #{groupCode}
+	</select>
+
 
 
 </mapper>

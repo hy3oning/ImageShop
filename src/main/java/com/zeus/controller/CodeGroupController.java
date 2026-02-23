@@ -21,7 +21,17 @@ public class CodeGroupController {
 	@Autowired
 	private CodeGroupService service;
 
-	// 등록 페이지
+	/**
+	 * 코드 그룹 등록 화면을 요청(GET)하면 호출되는 메서드.
+	 * 
+	 * - 빈 CodeGroup 객체를 생성하여 Model에 담는다.
+	 * - View(JSP/Thymeleaf)에서 form 바인딩용 객체로 사용된다.
+	 * - 반환 타입이 void이므로 요청 URL(/register)에 해당하는
+	 * 뷰 이름이 자동으로 매핑된다.
+	 *
+	 * @param model View에 전달할 데이터를 저장하는 Model 객체
+	 * @throws Exception 예외 발생 시 상위로 전달
+	 */
 	@GetMapping("/register")
 	public void registerForm(Model model) throws Exception {
 		CodeGroup codeGroup = new CodeGroup();
@@ -86,4 +96,10 @@ public class CodeGroupController {
 	public void list(Model model) throws Exception {
 		model.addAttribute("list", service.list());
 	}
+
+	@GetMapping("/read")
+	public void read(CodeGroup codeGroup, Model model) throws Exception {
+		model.addAttribute(service.read(codeGroup));
+	}
+
 }
