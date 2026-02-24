@@ -4,7 +4,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -57,7 +56,8 @@
 				<button type="button" id="btnRegister">
 					<spring:message code="action.register" />
 				</button>
-				<sec:authorize access="hasRole('ADMIN')">
+				<%-- 인 가 정 책 --%>
+				<sec:authorize access="hasRole('ROLE_ADMIN')">
 					<button type="button" id="btnList">
 						<spring:message code="action.list" />
 					</button>

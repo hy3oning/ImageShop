@@ -2,39 +2,40 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeus.mapper.MemberMapper">
 	<!-- 등록 처리 -->
-	<insert id="create">
-		INSERT INTO MEMBER
-		(
-		USER_NO,
-		USER_ID,
-		USER_PW,
-		USER_NAME,
-		JOB
-		)
+	<insert id="register">
+		<selectKey keyProperty="userNo" resultType="int"
+			order="BEFORE">
+			SELECT MEMBER_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+
+		INSERT INTO MEMBER (USER_NO, USER_ID, USER_PW, USER_NAME, JOB)
 		VALUES
-		(
-		MEMBER_SEQ.NEXTVAL,
-		#{userId},
-		#{userPw},
-		#{userName},
-		#{job}
-		)
+		(#{userNo}, #{userId}, #{userPw}, #{userName}, #{job})
 	</insert>
 	<insert id="createAuth">
-		INSERT INTO MEMBER_AUTH(
-		USER_NO,
-		AUTH
-		)
+		INSERT INTO MEMBER_AUTH (USER_NO, AUTH)
 		VALUES
-		(
-		MEMBER_SEQ.CURRVAL,
-		#{auth}
-		)
+		(#{userNo}, #{auth})
 	</insert>
 	<delete id="deleteAuth">
 		DELETE FROM MEMBER_AUTH
 		WHERE USER_NO =#{userNo}
 	</delete>
+	<!-- 목록 조회 -->
+	<select id="list" resultType="Member">
+		SELECT USER_NO,
+		USER_ID,
+		USER_PW,
+		USER_NAME,
+		(SELECT CODE_NAME FROM CODE_DETAIL WHERE GROUP_CODE =
+		'A00'
+		AND CODE_VALUE = job) AS JOB,
+		COIN,
+		REG_DATE
+		FROM MEMBER
+		ORDER BY REG_DATE
+		DESC
+	</select>
 
 
 </mapper>
