@@ -70,7 +70,7 @@
 
 	<script>
         $(document).ready(function() {
-            var formObj = $("#member");
+            let formObj = $("#member");
 
             $("#btnRegister").on("click", function() {
                 formObj.submit();
