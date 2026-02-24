@@ -21,9 +21,14 @@ spring:
         multipart:
             max-file-size: 10MB
             max-request-size: 10MB
+        encoding:
+            charset: UTF-8
+            enabled: true
+            force: true
 
     messages:
         basename: message.message
+        encoding: UTF-8
 
     security:
         user:
