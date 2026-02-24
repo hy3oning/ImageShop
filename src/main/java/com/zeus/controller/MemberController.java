@@ -80,6 +80,57 @@ public class MemberController {
 		model.addAttribute("list", service.list());
 	}
 
+	// 상세 페이지
+	@GetMapping("/read")
+	public void read(int userNo, Model model) throws Exception {
+
+		// 직업코드 목록
+		String groupCode = "A00";
+		List<CodeLabelValue> jobList = codeService.getCodeList(groupCode);
+		model.addAttribute("jobList", jobList);
+
+		// 회원 상세
+		model.addAttribute("member", service.read(userNo));
+	}
+
+	// 수정 페이지
+	@GetMapping("/modify")
+	public void modifyForm(int userNo, Model model) throws Exception {
+
+		// 직업코드 목록
+		String groupCode = "A00";
+		List<CodeLabelValue> jobList = codeService.getCodeList(groupCode);
+		model.addAttribute("jobList", jobList);
+
+		// 회원 상세 (폼 바인딩 대상)
+		model.addAttribute("member", service.read(userNo));
+	}
+
+	// 수정 처리
+	@PostMapping("/modify")
+	public String modify(Member member, RedirectAttributes rttr) throws Exception {
+		int count = service.modify(member);
+		if (count > 0) {
+			rttr.addFlashAttribute("msg", "SUCCESS");
+
+		} else {
+			rttr.addFlashAttribute("msg", "FAILED");
+		}
+		return "redirect:/user/list";
+	}
+
+	// 삭제 처리
+	@PostMapping("/remove")
+	public String remove(int userNo, RedirectAttributes rttr) throws Exception {
+		int count = service.remove(userNo);
+		if (count > 0) {
+			rttr.addFlashAttribute("msg", "SUCCESS");
+		} else {
+			rttr.addFlashAttribute("msg", "FAILED");
+		}
+		return "redirect:/user/list";
+	}
+
 	// 등록 성공 페이지
 	@GetMapping("/registerSuccess")
 	public void registerSuccess(Model model) throws Exception {

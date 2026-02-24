@@ -1,8 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.zeus.mapper.MemberMapper">
+
+	<!-- 사용자 정의 resultMap -->
+	<resultMap type="com.zeus.domain.Member" id="memberMap">
+		<id property="userNo" column="user_no" />
+		<result property="userId" column="user_id" />
+		<result property="userPw" column="user_pw" />
+		<result property="userName" column="user_name" />
+		<result property="job" column="job" />
+		<result property="coin" column="coin" />
+		<result property="enabled" column="enabled" />
+		<result property="regDate" column="reg_date" />
+		<result property="updDate" column="upd_date" />
+
+		<!-- read 쿼리에서 JOIN으로 auth가 같이 나오므로 컬렉션 매핑 -->
+		<collection property="authList"
+			ofType="com.zeus.domain.MemberAuth">
+			<result property="userNo" column="user_no" />
+			<result property="auth" column="auth" />
+		</collection>
+	</resultMap>
+
 	<!-- 등록 처리 -->
-	<insert id="register">
+	<insert id="register" parameterType="com.zeus.domain.Member">
 		<selectKey keyProperty="userNo" resultType="int"
 			order="BEFORE">
 			SELECT MEMBER_SEQ.NEXTVAL FROM DUAL
@@ -12,30 +36,79 @@
 		VALUES
 		(#{userNo}, #{userId}, #{userPw}, #{userName}, #{job})
 	</insert>
-	<insert id="createAuth">
+
+	<!-- 권한 생성 -->
+	<insert id="createAuth"
+		parameterType="com.zeus.domain.MemberAuth">
 		INSERT INTO MEMBER_AUTH (USER_NO, AUTH)
 		VALUES
 		(#{userNo}, #{auth})
 	</insert>
-	<delete id="deleteAuth">
+
+	<!-- 권한 삭제 -->
+	<delete id="deleteAuth" parameterType="int">
 		DELETE FROM MEMBER_AUTH
-		WHERE USER_NO =#{userNo}
+		WHERE USER_NO = #{userNo}
 	</delete>
+
 	<!-- 목록 조회 -->
-	<select id="list" resultType="Member">
-		SELECT USER_NO,
+	<select id="list" resultType="com.zeus.domain.Member">
+		SELECT
+		USER_NO,
 		USER_ID,
 		USER_PW,
 		USER_NAME,
-		(SELECT CODE_NAME FROM CODE_DETAIL WHERE GROUP_CODE =
-		'A00'
-		AND CODE_VALUE = job) AS JOB,
+		JOB,
 		COIN,
 		REG_DATE
 		FROM MEMBER
-		ORDER BY REG_DATE
-		DESC
+		ORDER BY REG_DATE DESC
 	</select>
 
+	<!-- 상세 조회 -->
+	<select id="read" resultMap="memberMap" parameterType="int">
+		SELECT
+		MEM.USER_NO,
+		MEM.USER_ID,
+		MEM.USER_PW,
+		MEM.USER_NAME,
+		MEM.JOB,
+		MEM.COIN,
+		MEM.ENABLED,
+		MEM.REG_DATE,
+		MEM.UPD_DATE,
+		MA.AUTH
+		FROM MEMBER MEM
+		LEFT OUTER
+		JOIN MEMBER_AUTH MA
+		ON MEM.USER_NO = MA.USER_NO
+		WHERE MEM.USER_NO =
+		#{userNo}
+	</select>
+
+	<!-- 권한 추가 -->
+	<insert id="modifyAuth"
+		parameterType="com.zeus.domain.MemberAuth">
+		INSERT INTO MEMBER_AUTH (USER_NO, AUTH)
+		VALUES
+		(#{userNo}, #{auth})
+	</insert>
+
+	<!-- 수정 처리 -->
+	<update id="modify" parameterType="com.zeus.domain.Member">
+		UPDATE MEMBER
+		SET
+		USER_NAME =
+		#{userName},
+		JOB = #{job},
+		UPD_DATE = SYSDATE
+		WHERE USER_NO = #{userNo}
+	</update>
+
+	<!-- 삭제 처리 -->
+	<delete id="remove">
+		DELETE FROM MEMBER
+		WHERE USER_NO = #{userNo}
+	</delete>
 
 </mapper>
