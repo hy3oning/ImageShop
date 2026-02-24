@@ -17,4 +17,9 @@ public class CodeServiceImpl implements CodeService {
 	public List<CodeLabelValue> getCodeGroupList() throws Exception {
 		return mapper.getCodeGruopList();
 	}
+
+	@Override
+	public List<CodeLabelValue> getCodeList(String groupCode) throws Exception {
+		return mapper.getCodeList(groupCode);
+	}
 }

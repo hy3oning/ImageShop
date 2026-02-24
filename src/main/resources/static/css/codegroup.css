@@ -1,8 +1,8 @@
 /* ===================================================
-   통합 디자인 스타일 (Home + 게시판 공통)
+   통합 디자인 스타일 (Home + 게시판 + 회원가입 공통)
    =================================================== */
 
-/* 1. 전체 초기화 및 배경 (Home.css 감성 유지) */
+/* 1. 전체 초기화 및 배경 */
 * { box-sizing: border-box; }
 
 body {
@@ -10,26 +10,22 @@ body {
     padding: 0;
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #1e293b;
-    /* 세련된 배경 그라데이션 */
     background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 55%, #f8fafc 100%);
     min-height: 100vh;
     padding: 20px;
 }
 
-/* ✅ 2. 최상위 레이아웃 정렬 (모든 요소를 1000px 중앙으로 고정) */
+/* 2. 최상위 레이아웃 정렬 (기존 레이아웃 유지하되 폼 박스만 별도 관리 권장) */
 .header-wrapper, 
 .menu-wrapper, 
 .container, 
-.footer-wrapper,
-div[align="center"], 
-div[align="right"] {
-    max-width: 1000px !important;
-    width: calc(100% - 32px) !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+.footer-wrapper {
+    max-width: 1000px;
+    width: calc(100% - 32px);
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/* 헤더/메뉴 구분선 너비 고정 */
 hr {
     max-width: 1000px;
     border: 0;
@@ -38,10 +34,10 @@ hr {
     margin: 15px auto;
 }
 
-/* 3. 메인 콘텐츠 박스 (컨테이너) */
+/* 3. 메인 콘텐츠 박스 */
 .container {
-    background: rgba(255, 255, 255, 0.85); /* 투명도 살짝 부여 */
-    backdrop-filter: blur(10px);           /* 뒤 배경 비치는 효과 */
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
     padding: 40px;
     border-radius: 20px;
     box-shadow: 0 15px 35px rgba(2, 6, 23, 0.08);
@@ -56,14 +52,7 @@ hr {
     padding: 80px 20px;
 }
 
-.home-hero h1 {
-    font-size: 2.5rem;
-    color: #1e293b;
-    margin-bottom: 10px;
-    letter-spacing: -0.03em;
-}
-
-/* 5. 제목 및 상단 버튼 배치 */
+/* 5. 제목 */
 h2 {
     color: #0f172a;
     text-align: center;
@@ -71,18 +60,16 @@ h2 {
     font-weight: 800;
 }
 
-.btn-new-wrapper {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 20px;
-}
-
-/* 6. 테이블 디자인 (모던 리스트) */
+/* 6. 테이블 디자인 (리스트 + 입력폼 공통) */
 table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     margin: 10px 0;
+}
+
+/* 리스트용 테이블 (게시판 등) */
+table:not(.user_table):not(.form-table) {
     border-radius: 12px;
     overflow: hidden;
     background: white;
@@ -100,28 +87,42 @@ th {
 td {
     padding: 16px;
     border-bottom: 1px solid #f1f5f9;
-    text-align: center;
 }
 
-tr:last-child td { border-bottom: none; }
+/* 리스트 테이블만 가운데 정렬 */
+table:not(.user_table):not(.form-table) td { text-align: center; }
 
-tr:hover { background-color: #f1f7ff; }
+/* 7. ✅ 입력 폼 디자인 통합 (비밀번호, 셀렉트박스 해결) */
+.user_table td, .form-table td { text-align: left; border: none; }
 
-/* 7. 입력 폼 디자인 */
-.form-table td { text-align: left; } /* 폼 내부는 왼쪽 정렬 */
+/* 라벨 컬럼 스타일링 */
+.user_table td:first-child, .form-table td:first-child {
+    width: 150px;
+    font-weight: 600;
+    color: #475569;
+}
 
-input[type="text"], input[readonly] {
+/* 모든 입력 요소 스타일 통일 */
+input[type="text"], 
+input[type="password"], 
+select, 
+textarea {
     width: 100%;
     max-width: 450px;
     padding: 12px 16px;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     font-size: 15px;
-    transition: 0.2s;
+    transition: all 0.2s;
+    background-color: #ffffff;
+    display: inline-block;
+    outline: none;
 }
 
-input[type="text"]:focus {
-    outline: none;
+/* 포커스 효과 */
+input[type="text"]:focus, 
+input[type="password"]:focus, 
+select:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }

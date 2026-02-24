@@ -11,4 +11,16 @@
 		WHERE USE_YN = 'Y'
 		ORDER BY GROUP_NAME
 	</select>
+	<!-- 지정된 그룹코드에 해당하는 코드 목록 조회 -->
+	<select id="getCodeList"
+		resultType="com.zeus.common.domain.CodeLabelValue">
+		SELECT CODE_VALUE AS VALUE,
+		CODE_NAME AS LABEL
+		FROM
+		CODE_DETAIL
+		WHERE GROUP_CODE = #{groupCode}
+		AND USE_YN = 'Y'
+		ORDER BY
+		SORT_SEQ
+	</select>
 </mapper>
