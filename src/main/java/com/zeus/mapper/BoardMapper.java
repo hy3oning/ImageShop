@@ -10,4 +10,6 @@ public interface BoardMapper {
 
 	List<Board> list() throws Exception;
 
+	Board read(int boardNo) throws Exception;
+
 }

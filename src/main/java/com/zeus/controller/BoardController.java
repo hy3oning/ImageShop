@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.zeus.common.security.domain.CustomUser;
@@ -58,4 +59,9 @@ public class BoardController {
 		model.addAttribute("list", service.list());
 	}
 
+	// 게시글 상세 페이지
+	@GetMapping("/read")
+	public void read(@RequestParam("boardNo") int boardNo, Model model) throws Exception {
+		model.addAttribute("board", service.read(boardNo));
+	}
 }
