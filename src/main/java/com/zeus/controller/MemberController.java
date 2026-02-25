@@ -156,6 +156,11 @@ public class MemberController {
 		return "user/setupFailure";
 	}
 
+	// 최초 관리자 생성 실패 페이지
+	@GetMapping("/setupFailure")
+	public void setupFailure() throws Exception {
+	}
+
 	// 등록 성공 페이지
 	@GetMapping("/registerSuccess")
 	public void registerSuccess(Model model) throws Exception {
