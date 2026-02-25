@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -75,6 +76,7 @@ public class MemberController {
 	}
 
 	// 목록 페이지
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/list")
 	public void list(Model model) throws Exception {
 		model.addAttribute("list", service.list());
@@ -120,6 +122,7 @@ public class MemberController {
 	}
 
 	// 삭제 처리
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/remove")
 	public String remove(int userNo, RedirectAttributes rttr) throws Exception {
 		int count = service.remove(userNo);

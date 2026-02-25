@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,6 +23,7 @@ import jakarta.servlet.DispatcherType;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig {
 
 	private final DataSource dataSource;
@@ -46,14 +48,14 @@ public class SecurityConfig {
 						.hasRole("MANAGER").requestMatchers("/admin/**").hasRole("ADMIN").anyRequest().permitAll())
 
 				// 3) 로그인
-				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/login") // PDF랑 동일하게 명시 (안 쓰면 기본도 /login 이긴 함)
+				.formLogin(form -> form.loginPage("/auth/login").loginProcessingUrl("/login") // PDF랑 동일하게 명시 (안 쓰면 기본도 /login 이긴 함)
 						.successHandler(authenticationSuccessHandler()).permitAll())
 
 				// 4) 접근 거부(권한 부족 403)
 				.exceptionHandling(ex -> ex.accessDeniedHandler(accessDeniedHandler()))
 
-				// 5) remember-me (DB 저장 방식)
-				.rememberMe(rm -> rm.key("zeus").tokenRepository(persistentTokenRepository())
+				// 5) remember-me (DB 저장 방식) //rm.key는 보통 예측하기 힘든 문자열을 사용 실무에선 환경변수
+				.rememberMe(rm -> rm.key("fasuefijeijdijfiojasoiefioj").tokenRepository(persistentTokenRepository())
 						.tokenValiditySeconds(60 * 60 * 24).userDetailsService(userDetailsService) // 중요: remember-me는 UserDetailsService 필요
 				)
 
@@ -95,10 +97,6 @@ public class SecurityConfig {
 	PersistentTokenRepository persistentTokenRepository() {
 		JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
 		repo.setDataSource(dataSource);
-
-		// 테이블 자동생성 옵션(딱 1번만! 운영/반복 실행 금지)
-		// repo.setCreateTableOnStartup(true);
-
 		return repo;
 	}
 }

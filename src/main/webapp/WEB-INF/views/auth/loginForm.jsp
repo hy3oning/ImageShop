@@ -40,7 +40,7 @@
 				<td></td>
 				<td style="padding-top: 5px;"><label
 					style="display: flex; align-items: center; cursor: pointer; font-size: 14px; color: #64748b;">
-						<input type="checkbox" name="rememberme"
+						<input type="checkbox" name="remember-me"
 						style="width: auto; margin-right: 8px;"> <spring:message
 							code="auth.rememberMe" />
 				</label></td>

@@ -13,7 +13,7 @@
 
 <body class="page">
 
-	<!-- ✅ 로그아웃 성공 시 alert -->
+	<!-- 로그아웃 성공 시 alert -->
 	<c:if test="${param.logout eq 'true'}">
 		<script>
 			alert("로그아웃 되었습니다.");
