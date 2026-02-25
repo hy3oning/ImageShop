@@ -83,13 +83,20 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void setupAdmin(Member member) throws Exception {
-		mapper.register(member);
-		MemberAuth memberAuth = new MemberAuth();
+	public int setupAdmin(Member member) throws Exception {
+		// 1. 회원 등록
+		int count = mapper.register(member);
 
-		memberAuth.setUserNo(member.getUserNo());
-		memberAuth.setAuth("ROLE_ADMIN");
-		mapper.createAuth(memberAuth);
+		// 2. 등록 성공했을 때만 권한 추가
+		if (count == 1) {
+			MemberAuth memberAuth = new MemberAuth();
+			memberAuth.setUserNo(member.getUserNo());
+			memberAuth.setAuth("ROLE_ADMIN");
+
+			mapper.createAuth(memberAuth);
+		}
+		// 3. insert 결과 반환
+		return count;
 	}
 
 }

@@ -30,12 +30,6 @@ spring:
         basename: message.message
         encoding: UTF-8
 
-    security:
-        user:
-            name: test
-            password: test
-            roles: MEMBER
-
 mybatis:
     config-location: classpath:mybatis-config.xml
     mapper-locations: classpath:mappers*.xml

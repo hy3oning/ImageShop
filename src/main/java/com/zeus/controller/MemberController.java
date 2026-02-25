@@ -134,15 +134,34 @@ public class MemberController {
 	// 최초 관리자 생성
 	@PostMapping("/setup")
 	public String setupAdmin(Member member, RedirectAttributes rttr) throws Exception {
-		// 회원 테이블 데이터 건수를 확인하여 빈 테이블이면 최초 관리자를 생성한다.
-		if (service.countAll() == 0) {
+		// 1. 회원 테이블 전체 건수 확인
+		int totalCount = service.countAll();
+
+		// 2. 회원이 한 명도 없을 때만 최초 관리자 생성
+		if (totalCount == 0) {
+
+			// 3. 비밀번호 암호화
 			String inputPassword = member.getUserPw();
 			member.setUserPw(passwordEncoder.encode(inputPassword));
+
+			// 4. 기본 직업 코드 설정
 			member.setJob("00");
-			service.setupAdmin(member);
-			rttr.addFlashAttribute("userName", member.getUserName());
+
+			// 5. 관리자 등록 처리
+			int count = service.setupAdmin(member);
+
+			// 6. 등록 성공 여부 판단
+			if (count == 1) {
+				rttr.addFlashAttribute("userName", member.getUserName());
+				rttr.addFlashAttribute("msg", "SUCCESS");
+			} else {
+				rttr.addFlashAttribute("msg", "FAILED");
+			}
+
 			return "redirect:/user/registerSuccess";
 		}
+
+		// 이미 회원이 존재하는 경우
 		return "redirect:/user/setupFailure";
 	}
 

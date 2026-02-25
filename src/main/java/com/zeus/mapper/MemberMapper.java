@@ -36,4 +36,7 @@ public interface MemberMapper {
 	// 전체카운트
 	int countAll() throws Exception;
 
+	// 사용자 아이디로 회원 정보 조회
+	Member readByUserId(String userId);
+
 }

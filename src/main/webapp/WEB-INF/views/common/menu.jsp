@@ -6,6 +6,9 @@
 	<div align="right">
 		<table style="display: inline-table;">
 			<tr>
+				<td width="80"><a href="/"> <spring:message
+							code="header.home" />
+				</a></td>
 				<!-- 회원가입 메뉴-->
 				<td width="100"><a href="/user/register"> <spring:message
 							code="header.joinMember" />
