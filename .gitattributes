@@ -1,2 +1,4 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+# properties 파일은 항상 UTF-8로
+*.properties text working-tree-encoding=UTF-8
