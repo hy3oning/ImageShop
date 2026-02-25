@@ -2,13 +2,15 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/codegroup.css">
+
 <h2>
 	<spring:message code="board.header.read" />
 </h2>
@@ -22,16 +24,37 @@
 			<td><form:input path="title" readonly="true" /></td>
 			<td><font color="red"><form:errors path="title" /></font></td>
 		</tr>
+
 		<tr>
 			<td><spring:message code="board.writer" /></td>
 			<td><form:input path="writer" readonly="true" /></td>
 			<td><font color="red"><form:errors path="writer" /></font></td>
 		</tr>
+
 		<tr>
 			<td><spring:message code="board.content" /></td>
 			<td><form:textarea path="content" readonly="true" /></td>
 			<td><font color="red"><form:errors path="content" /></font></td>
 		</tr>
+
+		<!-- 작성일 -->
+		<tr>
+			<td><spring:message code="board.regdate" /></td>
+			<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm"
+					value="${board.regDate}" /></td>
+			<td></td>
+		</tr>
+
+		<!--  수정된 경우에만 수정일 표시 (null이 아니고, 작성일과 다를 때) -->
+		<c:if
+			test="${board.updDate ne null and board.updDate ne board.regDate}">
+			<tr>
+				<td><spring:message code="board.upddate" /></td>
+				<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm"
+						value="${board.updDate}" /></td>
+				<td></td>
+			</tr>
+		</c:if>
 	</table>
 
 	<div style="margin-top: 16px;">
@@ -47,6 +70,7 @@
 			</button>
 		</sec:authorize>
 
+		<!-- 회원(본인 글만) -->
 		<sec:authorize access="hasRole('ROLE_MEMBER')">
 			<c:if test="${pinfo.username eq board.writer}">
 				<button type="button" id="btnEdit">
@@ -66,11 +90,11 @@
 
 <script>
 	$(document).ready(function() {
-		var formObj = $("#board");
-		var ctx = "${pageContext.request.contextPath}";
+		let formObj = $("#board");
+		let ctx = "${pageContext.request.contextPath}";
 
 		$("#btnEdit").on("click", function() {
-			var boardNoVal = $("#boardNo").val();
+			let boardNoVal = $("#boardNo").val();
 			self.location = ctx + "/board/modify?boardNo=" + boardNoVal;
 		});
 

@@ -16,27 +16,52 @@
 		(#{boardNo}, #{title}, #{content}, #{writer})
 	</insert>
 
-	<!-- 게시글 목록 페이지 (목록은 가볍게) -->
+	<!-- 게시글 목록 페이지 -->
 	<select id="list" resultType="Board">
-  <![CDATA[
-    SELECT BOARD_NO,
-           TITLE,
-           WRITER,
-           REG_DATE
-    FROM BOARD
-    WHERE BOARD_NO > 0
-    ORDER BY BOARD_NO DESC
-  ]]>
+<![CDATA[
+  SELECT BOARD_NO,
+         TITLE,
+         WRITER,
+         REG_DATE,
+         UPD_DATE
+  FROM BOARD
+  WHERE BOARD_NO > 0
+  ORDER BY BOARD_NO DESC
+]]>
 	</select>
 
 	<!-- 게시글 상세 조회 -->
 	<select id="read" resultType="Board">
-		SELECT BOARD_NO,
-		TITLE,
-		CONTENT,
-		WRITER,
-		REG_DATE
-		FROM BOARD
-		WHERE BOARD_NO = #{boardNo}
+<![CDATA[
+  SELECT BOARD_NO,
+         TITLE,
+         CONTENT,
+         WRITER,
+         REG_DATE,
+         UPD_DATE
+  FROM BOARD
+  WHERE BOARD_NO = #{boardNo}
+]]>
 	</select>
+	<!-- 게시글 수정 처리 -->
+	<update id="modify" parameterType="com.zeus.domain.Board">
+		UPDATE BOARD
+		SET TITLE =
+		#{title},
+		CONTENT = #{content},
+		UPD_DATE = SYSDATE
+		WHERE BOARD_NO =
+		#{boardNo}
+		AND WRITER = #{writer}
+	</update>
+	<!-- 게시글 수정 처리 (관리자용) -->
+	<update id="modifyByAdmin" parameterType="com.zeus.domain.Board">
+		UPDATE BOARD
+		SET TITLE =
+		#{title},
+		CONTENT = #{content},
+		UPD_DATE = SYSDATE
+		WHERE BOARD_NO =
+		#{boardNo}
+	</update>
 </mapper>

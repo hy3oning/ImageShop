@@ -12,4 +12,5 @@ public class Board {
 	private String content;
 	private String writer;
 	private Date regDate;
+	private Date updDate;
 }

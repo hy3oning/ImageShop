@@ -3,6 +3,7 @@ package com.zeus.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,11 +66,29 @@ public class BoardController {
 		model.addAttribute("board", service.read(boardNo));
 	}
 
+	// 게시글 수정 페이지
 	@GetMapping("/modify")
 	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
 	public void modifyForm(@RequestParam("boardNo") int boardNo, Model model) throws Exception {
 
 		model.addAttribute("board", service.read(boardNo));
+	}
+
+	// 게시글 수정 처리
+	@PostMapping("/modify")
+	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
+	public String modify(Board board, @AuthenticationPrincipal CustomUser customUser, RedirectAttributes rttr)
+			throws Exception {
+		boolean isAdmin = customUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+		int count;
+		if (isAdmin) {
+			count = service.modifyByAdmin(board);
+		} else {
+			board.setWriter(customUser.getUsername());
+			count = service.modify(board);
+		}
+		rttr.addFlashAttribute("msg", (count > 0) ? "SUCCESS" : "FAILED");
+		return "redirect:/board/list";
 	}
 
 }

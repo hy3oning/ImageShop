@@ -29,4 +29,14 @@ public class BoardServiceImpl implements BoardService {
 		return mapper.read(boardNo);
 	}
 
+	@Override
+	public int modify(Board board) throws Exception {
+		return mapper.modify(board);
+	}
+
+	@Override
+	public int modifyByAdmin(Board board) throws Exception {
+		return mapper.modifyByAdmin(board);
+	}
+
 }

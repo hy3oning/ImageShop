@@ -9,8 +9,9 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/codegroup.css">
 
+<jsp:include page="/WEB-INF/views/common/header.jsp" />
+<jsp:include page="/WEB-INF/views/common/menu.jsp" />
 <div class="container">
-
 	<h2>
 		<spring:message code="board.header.list" />
 	</h2>
@@ -47,7 +48,6 @@
 						<tr>
 							<td>${board.boardNo}</td>
 
-							<!-- 제목만 왼쪽 정렬하고 싶으면 아래 CSS 1줄 추가(밑에 2번 참고) -->
 							<td class="td-title"><a
 								href="${pageContext.request.contextPath}/board/read?boardNo=${board.boardNo}">
 									${board.title} </a></td>
