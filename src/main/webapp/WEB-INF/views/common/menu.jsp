@@ -12,6 +12,9 @@
 				</a></td>
 				<!-- 로그인을 하지 않은 경우 true -->
 				<sec:authorize access="!isAuthenticated()">
+					<!-- 회원 게시판를 메뉴에 추가한다. -->
+					<td width="120"><a href="/board/list"><spring:message
+								code="menu.board.member" /></a></td>
 				</sec:authorize>
 				<!-- 인증된 사용자인 경우 true -->
 				<sec:authorize access="isAuthenticated()">

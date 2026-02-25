@@ -31,11 +31,6 @@
 					<td><form:input path="userId" readonly="true" /></td>
 				</tr>
 				<tr>
-					<td><spring:message code="user.userPw" /></td>
-					<td><form:input path="userPw" readonly="true" /> <form:errors
-							path="userPw" cssClass="form-errors" /></td>
-				</tr>
-				<tr>
 					<td><spring:message code="user.userName" /></td>
 					<td><form:input path="userName" readonly="true" /></td>
 				</tr>

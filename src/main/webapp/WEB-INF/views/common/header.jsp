@@ -24,7 +24,7 @@
 				<!-- 로그인을 거친 인증된 사용자인 경우 사용자명을 보여주고 로그아웃 처리(POST)할 수 있게 한다. -->
 				<sec:authorize access="isAuthenticated()">
 					<td width="220"><sec:authentication
-							property="principal.username" /> 님 <!-- ✅ 실제 로그아웃은 Spring Security가 처리하는 POST /logout -->
+							property="principal.username" /> 님
 						<form action="/logout" method="post" style="display: inline;">
 							<button type="submit"
 								style="background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline;">

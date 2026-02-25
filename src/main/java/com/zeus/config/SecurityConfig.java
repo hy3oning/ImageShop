@@ -55,8 +55,9 @@ public class SecurityConfig {
 				.exceptionHandling(ex -> ex.accessDeniedHandler(accessDeniedHandler()))
 
 				// 5) remember-me (DB 저장 방식) //rm.key는 보통 예측하기 힘든 문자열을 사용 실무에선 환경변수
-				.rememberMe(rm -> rm.key("fasuefijeijdijfiojasoiefioj").tokenRepository(persistentTokenRepository())
-						.tokenValiditySeconds(60 * 60 * 24).userDetailsService(userDetailsService) // 중요: remember-me는 UserDetailsService 필요
+				.rememberMe(rm -> rm.key("fasuefijeijdijfiojasoiefioj").rememberMeCookieName("remember-me")
+						.tokenRepository(persistentTokenRepository()).tokenValiditySeconds(60 * 60 * 24)
+						.userDetailsService(userDetailsService) // 중요: remember-me는 UserDetailsService 필요
 				)
 
 				// 6) 로그아웃
@@ -64,13 +65,13 @@ public class SecurityConfig {
 						// 로그아웃 처리 URL (POST /logout 요청 시 Spring Security가 처리)
 						.logoutUrl("/logout")
 						// 로그아웃 성공 후 홈으로 리다이렉트 (alert 출력을 위해 쿼리 파라미터 전달)
-						.logoutSuccessUrl("/?logout=true")
+						.logoutSuccessUrl("/auth/logoutSuccess")
 						// HTTP 세션 무효화 (서버 세션 제거)
 						.invalidateHttpSession(true)
 						// SecurityContext 내 인증 정보 제거
 						.clearAuthentication(true)
 						// 세션 쿠키 삭제 (브라우저 측 JSESSIONID 제거)
-						.deleteCookies("JSESSIONID")
+						.deleteCookies("JSESSIONID", "remember-me")
 						// 로그아웃 관련 URL은 모든 사용자 접근 허용
 						.permitAll());
 
