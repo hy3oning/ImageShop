@@ -32,4 +32,6 @@ public interface MemberMapper {
 
 	int remove(int userNo) throws Exception;
 
+	int countAll() throws Exception;
+
 }

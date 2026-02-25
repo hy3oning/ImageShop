@@ -77,4 +77,19 @@ public class MemberServiceImpl implements MemberService {
 		return count;
 	}
 
+	@Override
+	public int countAll() throws Exception {
+		return mapper.countAll();
+	}
+
+	@Override
+	public void setupAdmin(Member member) throws Exception {
+		mapper.register(member);
+		MemberAuth memberAuth = new MemberAuth();
+
+		memberAuth.setUserNo(member.getUserNo());
+		memberAuth.setAuth("ROLE_ADMIN");
+		mapper.createAuth(memberAuth);
+	}
+
 }

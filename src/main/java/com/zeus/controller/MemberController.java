@@ -131,6 +131,31 @@ public class MemberController {
 		return "redirect:/user/list";
 	}
 
+	// 최초 관리자 생성
+	@PostMapping("/setup")
+	public String setupAdmin(Member member, RedirectAttributes rttr) throws Exception {
+		// 회원 테이블 데이터 건수를 확인하여 빈 테이블이면 최초 관리자를 생성한다.
+		if (service.countAll() == 0) {
+			String inputPassword = member.getUserPw();
+			member.setUserPw(passwordEncoder.encode(inputPassword));
+			member.setJob("00");
+			service.setupAdmin(member);
+			rttr.addFlashAttribute("userName", member.getUserName());
+			return "redirect:/user/registerSuccess";
+		}
+		return "redirect:/user/setupFailure";
+	}
+
+	// 최초 관리자를 생성하는 화면을 반환한다.
+	@GetMapping("/setup")
+	public String setupAdminForm(Member member, Model model) throws Exception {
+		// 회원 테이블 데이터 건수를 확인하여 최초 관리자 등록 페이지를 표시한다.
+		if (service.countAll() == 0) {
+			return "user/setup";
+		}
+		return "user/setupFailure";
+	}
+
 	// 등록 성공 페이지
 	@GetMapping("/registerSuccess")
 	public void registerSuccess(Model model) throws Exception {

@@ -25,7 +25,6 @@
 		<form:form modelAttribute="member" id="member">
 			<form:hidden path="userNo" />
 
-			<%-- CSS의 .user_table 스타일을 적용하기 위해 클래스 추가 --%>
 			<table class="user_table">
 				<tr>
 					<td><spring:message code="user.userId" /></td>
@@ -73,7 +72,6 @@
 			</table>
 		</form:form>
 
-		<%-- 버튼들을 중앙 정렬하기 위해 .button-container 클래스 적용 --%>
 		<div class="button-container">
 			<button type="button" id="btnEdit">
 				<spring:message code="action.edit" />
@@ -88,7 +86,6 @@
 			</button>
 		</div>
 	</div>
-	<%-- .container 끝 --%>
 
 	<jsp:include page="/WEB-INF/views/common/footer.jsp" />
 

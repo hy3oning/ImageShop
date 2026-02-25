@@ -5,9 +5,9 @@
 
 <mapper namespace="com.zeus.mapper.MemberMapper">
 
-	<!-- 사용자 정의 resultMap -->
-	<resultMap type="com.zeus.domain.Member" id="memberMap">
+	<resultMap type="Member" id="memberMap">
 		<id property="userNo" column="user_no" />
+
 		<result property="userId" column="user_id" />
 		<result property="userPw" column="user_pw" />
 		<result property="userName" column="user_name" />
@@ -17,12 +17,12 @@
 		<result property="regDate" column="reg_date" />
 		<result property="updDate" column="upd_date" />
 
-		<!-- read 쿼리에서 JOIN으로 auth가 같이 나오므로 컬렉션 매핑 -->
-		<collection property="authList"
-			ofType="com.zeus.domain.MemberAuth">
-			<result property="userNo" column="user_no" />
-			<result property="auth" column="auth" />
-		</collection>
+		<collection property="authList" resultMap="authMap" />
+	</resultMap>
+
+	<resultMap type="MemberAuth" id="authMap">
+		<id property="auth" column="auth" />
+		<result property="userNo" column="user_no" />
 	</resultMap>
 
 	<!-- 등록 처리 -->
@@ -110,5 +110,9 @@
 		DELETE FROM MEMBER
 		WHERE USER_NO = #{userNo}
 	</delete>
-
+	<!-- 회원 테이블의 데이터 건수 조회 -->
+	<select id="countAll" resultType="int">
+		SELECT COUNT(*)
+		FROM MEMBER
+	</select>
 </mapper>

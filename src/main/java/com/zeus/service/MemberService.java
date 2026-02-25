@@ -16,4 +16,8 @@ public interface MemberService {
 
 	public int remove(int userNo) throws Exception;
 
+	public int countAll() throws Exception;
+
+	public void setupAdmin(Member member) throws Exception;
+
 }

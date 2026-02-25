@@ -37,6 +37,7 @@ public class SecurityConfig {
 //				 3) 로그인 설정 (기본 폼 로그인 사용)
 				.formLogin(form -> form.loginPage("/login") // 커스텀 로그인 페이지 사용
 						.permitAll())
+//				.formLogin(Customizer.withDefaults()) // 시큐리티 기본 로그인 페이지 사용
 
 				// 4) 로그아웃 설정
 				.logout(logout -> logout.logoutUrl("/logout").permitAll());
