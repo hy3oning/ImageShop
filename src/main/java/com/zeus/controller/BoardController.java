@@ -64,4 +64,12 @@ public class BoardController {
 	public void read(@RequestParam("boardNo") int boardNo, Model model) throws Exception {
 		model.addAttribute("board", service.read(boardNo));
 	}
+
+	@GetMapping("/modify")
+	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
+	public void modifyForm(@RequestParam("boardNo") int boardNo, Model model) throws Exception {
+
+		model.addAttribute("board", service.read(boardNo));
+	}
+
 }

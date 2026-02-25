@@ -5,31 +5,32 @@
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/css/codegroup.css">
+<link rel="stylesheet" href="/css/codegroup.css">
 <h2>
-	<spring:message code="board.header.read" />
+	<spring:message code="board.header.modify" />
 </h2>
 
-<form:form modelAttribute="board" id="board" method="post">
+<form:form modelAttribute="board"
+	action="${pageContext.request.contextPath}/board/modify" method="post"
+	id="board">
 	<form:hidden path="boardNo" id="boardNo" />
 
 	<table>
 		<tr>
 			<td><spring:message code="board.title" /></td>
-			<td><form:input path="title" readonly="true" /></td>
+			<td><form:input path="title" /></td>
 			<td><font color="red"><form:errors path="title" /></font></td>
 		</tr>
+
 		<tr>
 			<td><spring:message code="board.writer" /></td>
 			<td><form:input path="writer" readonly="true" /></td>
 			<td><font color="red"><form:errors path="writer" /></font></td>
 		</tr>
+
 		<tr>
 			<td><spring:message code="board.content" /></td>
-			<td><form:textarea path="content" readonly="true" /></td>
+			<td><form:textarea path="content" /></td>
 			<td><font color="red"><form:errors path="content" /></font></td>
 		</tr>
 	</table>
@@ -37,26 +38,23 @@
 	<div style="margin-top: 16px;">
 		<sec:authentication property="principal" var="pinfo" />
 
-		<!-- 관리자 -->
+		<c:set var="canModify" value="false" />
+
 		<sec:authorize access="hasRole('ROLE_ADMIN')">
-			<button type="button" id="btnEdit">
-				<spring:message code="action.edit" />
-			</button>
-			<button type="button" id="btnRemove">
-				<spring:message code="action.remove" />
-			</button>
+			<c:set var="canModify" value="true" />
 		</sec:authorize>
 
 		<sec:authorize access="hasRole('ROLE_MEMBER')">
 			<c:if test="${pinfo.username eq board.writer}">
-				<button type="button" id="btnEdit">
-					<spring:message code="action.edit" />
-				</button>
-				<button type="button" id="btnRemove">
-					<spring:message code="action.remove" />
-				</button>
+				<c:set var="canModify" value="true" />
 			</c:if>
 		</sec:authorize>
+
+		<c:if test="${canModify}">
+			<button type="button" id="btnModify">
+				<spring:message code="action.modify" />
+			</button>
+		</c:if>
 
 		<button type="button" id="btnList">
 			<spring:message code="action.list" />
@@ -65,22 +63,23 @@
 </form:form>
 
 <script>
-	$(document).ready(function() {
-		var formObj = $("#board");
-		var ctx = "${pageContext.request.contextPath}";
+	document.addEventListener("DOMContentLoaded", function() {
+		const formObj = document.getElementById("board");
+		const ctx = "${pageContext.request.contextPath}";
 
-		$("#btnEdit").on("click", function() {
-			var boardNoVal = $("#boardNo").val();
-			self.location = ctx + "/board/modify?boardNo=" + boardNoVal;
-		});
+		const btnModify = document.getElementById("btnModify");
+		const btnList = document.getElementById("btnList");
 
-		$("#btnRemove").on("click", function() {
-			formObj.attr("action", ctx + "/board/remove");
-			formObj.submit();
-		});
+		if (btnModify) {
+			btnModify.addEventListener("click", function() {
+				formObj.submit();
+			});
+		}
 
-		$("#btnList").on("click", function() {
-			self.location = ctx + "/board/list";
-		});
+		if (btnList) {
+			btnList.addEventListener("click", function() {
+				location.href = ctx + "/board/list";
+			});
+		}
 	});
 </script>
