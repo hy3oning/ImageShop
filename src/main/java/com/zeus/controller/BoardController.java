@@ -44,13 +44,11 @@ public class BoardController {
 	// 게시글 등록 처리
 	@PostMapping("/register")
 	@PreAuthorize("hasRole('MEMBER')")
-	public String register(Board board, RedirectAttributes rttr) throws Exception {
+	public String register(Board board, RedirectAttributes rttr, @AuthenticationPrincipal CustomUser customUser)
+			throws Exception {
+		board.setWriter(customUser.getMember().getUserId());
 		int count = service.register(board);
-		if (count > 0) {
-			rttr.addFlashAttribute("msg", "SUCCESS");
-		} else {
-			rttr.addFlashAttribute("msg", "FAILED");
-		}
+		rttr.addFlashAttribute("msg", (count > 0) ? "SUCCESS" : "FAILED");
 		return "redirect:/board/list";
 	}
 

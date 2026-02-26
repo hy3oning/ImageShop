@@ -7,6 +7,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/codegroup.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="container">
 	<h2>
 		<spring:message code="board.header.register" />
@@ -22,8 +23,8 @@
 
 			<tr>
 				<td><spring:message code="board.writer" /></td>
-				<td><form:input path="writer" readonly="true" /> <form:errors
-						path="writer" cssClass="form-errors" /></td>
+				<td><input type="text" value="${board.writer}"
+					readonly="readonly" /></td>
 			</tr>
 
 			<tr>

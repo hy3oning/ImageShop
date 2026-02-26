@@ -52,6 +52,12 @@
 				<spring:message code="action.login" />
 			</button>
 		</div>
+		<div class="auth-links">
+			<a class="auth-link"
+				href="${pageContext.request.contextPath}/user/register"> <spring:message
+					code="action.register" text="회원가입" />
+			</a>
+		</div>
 
 		<sec:csrfInput />
 	</form>
