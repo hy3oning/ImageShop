@@ -91,4 +91,28 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 
+	// 게시글 삭제 처리
+	@PostMapping("/remove")
+	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
+	public String remove(@RequestParam int boardNo, RedirectAttributes rttr,
+			@AuthenticationPrincipal CustomUser customUser) throws Exception {
+
+		boolean isAdmin = customUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+		int count;
+
+		if (isAdmin) {
+			count = service.removeByAdmin(boardNo);
+		} else {
+			Board board = new Board();
+			board.setBoardNo(boardNo);
+			board.setWriter(customUser.getUsername());
+
+			count = service.remove(board);
+		}
+
+		rttr.addFlashAttribute("msg", (count > 0) ? "SUCCESS" : "FAILED");
+		return "redirect:/board/list";
+	}
+
 }

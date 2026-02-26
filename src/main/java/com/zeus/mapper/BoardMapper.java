@@ -16,4 +16,10 @@ public interface BoardMapper {
 
 	int modifyByAdmin(Board board) throws Exception;
 
+	int count() throws Exception;
+
+	int remove(Board board) throws Exception;
+
+	int removeByAdmin(int boardNo) throws Exception;
+
 }

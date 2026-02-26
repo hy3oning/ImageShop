@@ -14,6 +14,12 @@ public interface BoardService {
 
 	int modify(Board board) throws Exception;
 
+	int remove(Board board)throws Exception;
+
 	int modifyByAdmin(Board board) throws Exception;
+
+	int removeByAdmin(int boardNo)throws Exception;
+	
+	public int count() throws Exception;
 
 }
