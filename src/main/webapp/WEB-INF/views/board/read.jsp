@@ -17,7 +17,9 @@
 
 <form:form modelAttribute="board" id="board" method="post">
 	<form:hidden path="boardNo" id="boardNo" />
-
+	<input type="hidden" id="page" name="page" value="${pgrq.page}">
+	<input type="hidden" id="sizePerPage" name="sizePerPage"
+		value="${pgrq.sizePerPage}">
 	<table>
 		<tr>
 			<td><spring:message code="board.title" /></td>
@@ -45,7 +47,7 @@
 			<td></td>
 		</tr>
 
-		<!--  수정된 경우에만 수정일 표시 (null이 아니고, 작성일과 다를 때) -->
+		<!-- 수정된 경우에만 수정일 표시 -->
 		<c:if
 			test="${board.updDate ne null and board.updDate ne board.regDate}">
 			<tr>
@@ -89,25 +91,47 @@
 </form:form>
 
 <script>
-	$(document).ready(function() {
-		let formObj = $("#board");
-		let ctx = "${pageContext.request.contextPath}";
+	$(document).ready(
+			function() {
+				let formObj = $("#board");
+				let ctx = "${pageContext.request.contextPath}";
 
-		$("#btnEdit").on("click", function() {
-			let boardNoVal = $("#boardNo").val();
-			self.location = ctx + "/board/modify?boardNo=" + boardNoVal;
-		});
+				function getPageParams() {
+					return {
+						page : $("#page").val(),
+						sizePerPage : $("#sizePerPage").val()
+					};
+				}
 
-		$("#btnRemove").on("click", function() {
-			if (!confirm("정말 삭제하시겠습니까?")) {
-				return; 
-			}
-			formObj.attr("action", ctx + "/board/remove");
-			formObj.submit();
-		});
+				// 수정: boardNo + page + sizePerPage 유지해서 이동
+				$("#btnEdit").on(
+						"click",
+						function() {
+							let boardNo = $("#boardNo").val();
+							let p = getPageParams();
 
-		$("#btnList").on("click", function() {
-			self.location = ctx + "/board/list";
-		});
-	});
+							self.location = ctx + "/board/modify?boardNo="
+									+ boardNo + "&page=" + p.page
+									+ "&sizePerPage=" + p.sizePerPage;
+						});
+
+				// 삭제: confirm 후 POST 전송 (hidden값 boardNo/page/sizePerPage 같이 감)
+				$("#btnRemove").on("click", function() {
+					if (!confirm("정말 삭제하시겠습니까?"))
+						return;
+
+					formObj.attr("action", ctx + "/board/remove");
+					formObj.submit();
+				});
+
+				// 목록: page + sizePerPage 유지해서 이동
+				$("#btnList").on(
+						"click",
+						function() {
+							let p = getPageParams();
+
+							self.location = ctx + "/board/list?page=" + p.page
+									+ "&sizePerPage=" + p.sizePerPage;
+						});
+			});
 </script>

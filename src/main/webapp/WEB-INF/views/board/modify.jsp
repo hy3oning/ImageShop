@@ -5,7 +5,8 @@
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<link rel="stylesheet" href="/css/codegroup.css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/css/codegroup.css">
 <h2>
 	<spring:message code="board.header.modify" />
 </h2>
@@ -14,7 +15,9 @@
 	action="${pageContext.request.contextPath}/board/modify" method="post"
 	id="board">
 	<form:hidden path="boardNo" id="boardNo" />
-
+	<input type="hidden" id="page" name="page" value="${pgrq.page}">
+	<input type="hidden" id="sizePerPage" name="sizePerPage"
+		value="${pgrq.sizePerPage}">
 	<table>
 		<tr>
 			<td><spring:message code="board.title" /></td>
@@ -70,15 +73,19 @@
 		const btnModify = document.getElementById("btnModify");
 		const btnList = document.getElementById("btnList");
 
+		const pageEl = document.getElementById("page");
+		const sizeEl = document.getElementById("sizePerPage");
+
 		if (btnModify) {
 			btnModify.addEventListener("click", function() {
-				formObj.submit();
+				formObj.submit(); // hidden page/sizePerPage 같이 POST로 전송됨
 			});
 		}
 
 		if (btnList) {
 			btnList.addEventListener("click", function() {
-				location.href = ctx + "/board/list";
+				location.href = ctx + "/board/list?page=" + pageEl.value
+						+ "&sizePerPage=" + sizeEl.value;
 			});
 		}
 	});

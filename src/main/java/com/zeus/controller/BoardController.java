@@ -1,6 +1,7 @@
 package com.zeus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -67,23 +68,31 @@ public class BoardController {
 
 	// 게시글 상세 페이지
 	@GetMapping("/read")
-	public void read(@RequestParam int boardNo, Model model) throws Exception {
+	public String read(@RequestParam int boardNo, @ModelAttribute("pgrq") PageRequest pageRequest, Model model)
+			throws Exception {
+
 		model.addAttribute("board", service.read(boardNo));
+		return "board/read";
 	}
 
 	// 게시글 수정 페이지
 	@GetMapping("/modify")
 	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
-	public void modifyForm(@RequestParam int boardNo, Model model) throws Exception {
-
-		model.addAttribute("board", service.read(boardNo));
+	public void modifyForm(@RequestParam int boardNo, @ModelAttribute("pgrq") PageRequest pageRequest,
+			@AuthenticationPrincipal CustomUser customUser, Model model) throws Exception {
+		Board board = service.read(boardNo);
+		boolean isAdmin = customUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+		if (!isAdmin && !customUser.getUsername().equals(board.getWriter())) {
+			throw new AccessDeniedException("본인 글만 수정할 수 있습니다.");
+		}
+		model.addAttribute("board", board);
 	}
 
 	// 게시글 수정 처리
 	@PostMapping("/modify")
 	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
-	public String modify(Board board, @AuthenticationPrincipal CustomUser customUser, RedirectAttributes rttr)
-			throws Exception {
+	public String modify(@ModelAttribute("pgrq") PageRequest pageRequest, Board board,
+			@AuthenticationPrincipal CustomUser customUser, RedirectAttributes rttr) throws Exception {
 		boolean isAdmin = customUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 		int count;
 		if (isAdmin) {
@@ -93,7 +102,7 @@ public class BoardController {
 			count = service.modify(board);
 		}
 		rttr.addFlashAttribute("msg", (count > 0) ? "SUCCESS" : "FAILED");
-		return "redirect:/board/list";
+		return "redirect:/board/list" + pageRequest.toUriString();
 	}
 
 	// 게시글 삭제 처리
