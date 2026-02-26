@@ -1,5 +1,8 @@
 package com.zeus.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.zeus.common.domain.CodeLabelValue;
 import com.zeus.common.domain.PageRequest;
 import com.zeus.common.domain.Pagination;
 import com.zeus.common.security.domain.CustomUser;
@@ -56,14 +60,26 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 
-	// 게시글 목록 페이지
+	// 페이징 요청 정보를 매개 변수로 받고 다시 뷰에 전달한다.
 	@GetMapping("/list")
 	public void list(@ModelAttribute("pgrq") PageRequest pageRequest, Model model) throws Exception {
+		// 뷰에 페이징 처리를 한 게시글 목록을 전달한다.
 		model.addAttribute("list", service.list(pageRequest));
+		// 페이징 네비게이션 정보를 뷰에 전달한다.
 		Pagination pagination = new Pagination();
-		pagination.setPageRequest(pageRequest);
+		pagination.setPageRequest(pageRequest);// 페이지 네비게이션 정보에 검색 처리된 게시글 건수를 저장한다(변경).
 		pagination.setTotalCount(service.count(pageRequest));
 		model.addAttribute("pagination", pagination);
+		// 검색 유형의 코드명과 코드값을 정의한다.
+		List<CodeLabelValue> searchTypeCodeValueList = new ArrayList<CodeLabelValue>();
+		searchTypeCodeValueList.add(new CodeLabelValue("n", "---"));
+		searchTypeCodeValueList.add(new CodeLabelValue("t", "Title"));
+		searchTypeCodeValueList.add(new CodeLabelValue("c", "Content"));
+		searchTypeCodeValueList.add(new CodeLabelValue("w", "Writer"));
+		searchTypeCodeValueList.add(new CodeLabelValue("tc", "Title OR	Content"));
+		searchTypeCodeValueList.add(new CodeLabelValue("cw", "Content OR Writer"));
+		searchTypeCodeValueList.add(new CodeLabelValue("tcw", "Title OR Content OR Writer"));
+		model.addAttribute("searchTypeCodeValueList", searchTypeCodeValueList);
 	}
 
 	// 게시글 상세 페이지
@@ -80,27 +96,38 @@ public class BoardController {
 	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
 	public void modifyForm(@RequestParam int boardNo, @ModelAttribute("pgrq") PageRequest pageRequest,
 			@AuthenticationPrincipal CustomUser customUser, Model model) throws Exception {
+
 		Board board = service.read(boardNo);
+
 		boolean isAdmin = customUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-		if (!isAdmin && !customUser.getUsername().equals(board.getWriter())) {
+
+		String loginId = customUser.getMember().getUserId();
+
+		if (!isAdmin && !loginId.equals(board.getWriter())) {
 			throw new AccessDeniedException("본인 글만 수정할 수 있습니다.");
 		}
+
 		model.addAttribute("board", board);
 	}
 
 	// 게시글 수정 처리
 	@PostMapping("/modify")
 	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
-	public String modify(PageRequest pageRequest, Board board, @AuthenticationPrincipal CustomUser customUser,
-			RedirectAttributes rttr) throws Exception {
+	public String modify(@ModelAttribute("pgrq") PageRequest pageRequest, Board board,
+			@AuthenticationPrincipal CustomUser customUser, RedirectAttributes rttr) throws Exception {
+
 		boolean isAdmin = customUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+		String loginId = customUser.getMember().getUserId();
+
 		int count;
 		if (isAdmin) {
 			count = service.modifyByAdmin(board);
 		} else {
-			board.setWriter(customUser.getUsername());
+			board.setWriter(loginId); // writer 조건 통일
 			count = service.modify(board);
 		}
+
 		rttr.addFlashAttribute("msg", (count > 0) ? "SUCCESS" : "FAILED");
 		return "redirect:/board/list" + pageRequest.toUriString();
 	}
@@ -108,21 +135,21 @@ public class BoardController {
 	// 게시글 삭제 처리
 	@PostMapping("/remove")
 	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
-	public String remove(@RequestParam int boardNo, PageRequest pageRequest,
+	public String remove(@RequestParam int boardNo, @ModelAttribute("pgrq") PageRequest pageRequest,
 			@AuthenticationPrincipal CustomUser customUser, RedirectAttributes rttr) throws Exception {
 
 		boolean isAdmin = customUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-		int count;
+		String loginId = customUser.getMember().getUserId();
 
+		int count;
 		if (isAdmin) {
 			count = service.removeByAdmin(boardNo);
 		} else {
 			Board board = new Board();
 			board.setBoardNo(boardNo);
-			board.setWriter(customUser.getUsername());
-
-			count = service.remove(board); // SQL에 writer 조건 필수
+			board.setWriter(loginId); // writer 조건 통일
+			count = service.remove(board);
 		}
 
 		rttr.addFlashAttribute("msg", (count > 0) ? "SUCCESS" : "FAILED");

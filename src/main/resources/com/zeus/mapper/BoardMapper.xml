@@ -4,149 +4,148 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeus.mapper.BoardMapper">
 
-	<!-- 게시글 등록 처리 (boardNo 반환) -->
-	<insert id="register" parameterType="Board">
+	<insert id="register" parameterType="com.zeus.domain.Board">
 		<selectKey keyProperty="boardNo" resultType="int"
 			order="BEFORE">
 			SELECT BOARD_SEQ.NEXTVAL FROM DUAL
 		</selectKey>
-
 		INSERT INTO BOARD (BOARD_NO, TITLE, CONTENT, WRITER)
-		VALUES
-		(#{boardNo}, #{title}, #{content}, #{writer})
+		VALUES (#{boardNo}, #{title}, #{content}, #{writer})
 	</insert>
 
-	<!-- 게시글 목록 페이지 (검색 + 페이징) -->
-	<select id="list"
-		parameterType="com.zeus.common.domain.PageRequest" resultType="Board">
-<![CDATA[
-  SELECT board_no, title, content, writer, reg_date, upd_date
-  FROM (
-    SELECT b.*,
-           ROW_NUMBER() OVER (ORDER BY board_no DESC, reg_date DESC) AS rn
-    FROM board b
-    WHERE 1=1
-]]>
+	<!-- 검색 조건 -->
+	<sql id="search">
 		<if
-			test="keyword != null and keyword != '' and searchType != null and !'n'.equals(searchType)">
+			test="searchType != null and searchType != '' and keyword != null and keyword != ''">
 			<choose>
-				<when test="'t'.equals(searchType)">
-					AND b.title LIKE '%' || #{keyword} || '%'
+				<when test="searchType == 't'.toString()">
+					AND title LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
 				</when>
-				<when test="'c'.equals(searchType)">
-					AND b.content LIKE '%' || #{keyword} || '%'
+
+				<when test="searchType == 'c'.toString()">
+					AND content LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
 				</when>
-				<when test="'w'.equals(searchType)">
-					AND b.writer LIKE '%' || #{keyword} || '%'
+
+				<when test="searchType == 'w'.toString()">
+					AND writer LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
 				</when>
-				<when test="'tc'.equals(searchType)">
-					AND (b.title LIKE '%' || #{keyword} || '%'
-					OR
-					b.content LIKE '%' || #{keyword} || '%')
+
+				<when test="searchType == 'tc'.toString()">
+					AND (
+					title LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					OR content LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					)
 				</when>
-				<when test="'cw'.equals(searchType)">
-					AND (b.content LIKE '%' || #{keyword} || '%'
-					OR
-					b.writer LIKE '%' || #{keyword} || '%')
+
+				<when test="searchType == 'cw'.toString()">
+					AND (
+					content LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					OR writer LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					)
 				</when>
-				<when test="'tcw'.equals(searchType)">
-					AND (b.title LIKE '%' || #{keyword} || '%'
-					OR
-					b.content LIKE '%' || #{keyword} || '%'
-					OR b.writer LIKE '%' ||
-					#{keyword} || '%')
+
+				<when test="searchType == 'tcw'.toString()">
+					AND (
+					title LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					OR content LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					OR writer LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					)
 				</when>
 			</choose>
 		</if>
+	</sql>
+
+	<!-- 목록(페이징 + 검색) : Oracle rownum 정석 -->
+	<select id="list"
+		parameterType="com.zeus.common.domain.PageRequest"
+		resultType="com.zeus.domain.Board">
 <![CDATA[
-  )
-  WHERE rn BETWEEN (#{pageStart} + 1) AND (#{pageStart} + #{sizePerPage})
-  ORDER BY rn
+SELECT
+  board_no,
+  title,
+  content,
+  writer,
+  reg_date
+FROM (
+  SELECT
+    inner_tbl.board_no,
+    inner_tbl.title,
+    inner_tbl.content,
+    inner_tbl.writer,
+    inner_tbl.reg_date,
+    ROWNUM AS rnum
+  FROM (
+    SELECT
+      board_no,
+      title,
+      content,
+      writer,
+      reg_date
+    FROM board
+    WHERE board_no > 0
+]]>
+		<include refid="search" />
+<![CDATA[
+    ORDER BY board_no DESC, reg_date DESC
+  ) inner_tbl
+  WHERE ROWNUM <= (#{sizePerPage} * #{page})
+)
+WHERE rnum >= (#{sizePerPage} * (#{page} - 1) + 1)
 ]]>
 	</select>
-	<!-- 게시글 상세 조회 -->
-	<select id="read" resultType="Board">
-	<![CDATA[
-  		SELECT BOARD_NO,
-         	TITLE,
-         	CONTENT,
-         	WRITER,
-         	REG_DATE,
-         	UPD_DATE
-  		FROM BOARD
-  		WHERE BOARD_NO = #{boardNo}
-	]]>
-	</select>
-	<!-- 게시글 수정 처리 -->
-	<update id="modify" parameterType="com.zeus.domain.Board">
-		UPDATE BOARD
-		SET TITLE =
-		#{title},
-		CONTENT = #{content},
-		UPD_DATE = SYSDATE
-		WHERE BOARD_NO =
-		#{boardNo}
-		AND WRITER = #{writer}
-	</update>
-	<!-- 게시글 수정 처리 (관리자용) -->
-	<update id="modifyByAdmin" parameterType="com.zeus.domain.Board">
-		UPDATE BOARD
-		SET TITLE =
-		#{title},
-		CONTENT = #{content},
-		UPD_DATE = SYSDATE
-		WHERE BOARD_NO =
-		#{boardNo}
-	</update>
-	<!-- 회원: 본인 글만 삭제 -->
-	<delete id="remove" parameterType="com.zeus.domain.Board">
-		DELETE FROM BOARD
-		WHERE
-		BOARD_NO = #{boardNo}
-		AND WRITER = #{writer}
-	</delete>
 
-	<!-- 관리자: 무조건 삭제 -->
-	<delete id="removeByAdmin" parameterType="int">
-		DELETE FROM BOARD
-		WHERE
-		BOARD_NO = #{boardNo}
-	</delete>
-
-	<!-- 게시글 전체 건수를 조회한다. (검색 반영) -->
+	<!-- 전체 건수(검색 포함) -->
 	<select id="count"
 		parameterType="com.zeus.common.domain.PageRequest" resultType="int">
 <![CDATA[
-  SELECT COUNT(b.board_no)
-  FROM board b
-  WHERE b.board_no > 0
+SELECT COUNT(*)
+FROM board
+WHERE board_no > 0
 ]]>
-		<if
-			test="keyword != null and keyword != '' and searchType != null and !'n'.equals(searchType)">
-			<choose>
-				<when test="'t'.equals(searchType)">
-					AND b.title LIKE '%' || #{keyword} || '%'
-				</when>
-				<when test="'c'.equals(searchType)">
-					AND b.content LIKE '%' || #{keyword} || '%'
-				</when>
-				<when test="'w'.equals(searchType)">
-					AND b.writer LIKE '%' || #{keyword} || '%'
-				</when>
-				<when test="'tc'.equals(searchType)">
-					AND (b.title LIKE '%' || #{keyword} || '%'
-					OR b.content LIKE '%' || #{keyword} || '%')
-				</when>
-				<when test="'cw'.equals(searchType)">
-					AND (b.content LIKE '%' || #{keyword} || '%'
-					OR b.writer LIKE '%' || #{keyword} || '%')
-				</when>
-				<when test="'tcw'.equals(searchType)">
-					AND (b.title LIKE '%' || #{keyword} || '%'
-					OR b.content LIKE '%' || #{keyword} || '%'
-					OR b.writer LIKE '%' || #{keyword} || '%')
-				</when>
-			</choose>
-		</if>
+		<include refid="search" />
 	</select>
+
+	<!-- 상세 -->
+	<select id="read" parameterType="int"
+		resultType="com.zeus.domain.Board">
+<![CDATA[
+SELECT BOARD_NO, TITLE, CONTENT, WRITER, REG_DATE, UPD_DATE
+FROM BOARD
+WHERE BOARD_NO = #{boardNo}
+]]>
+	</select>
+
+	<!-- 수정(회원: 본인 글만) -->
+	<update id="modify" parameterType="com.zeus.domain.Board">
+		UPDATE BOARD
+		SET TITLE = #{title},
+		CONTENT = #{content},
+		UPD_DATE = SYSDATE
+		WHERE BOARD_NO = #{boardNo}
+		AND WRITER = #{writer}
+	</update>
+
+	<!-- 수정(관리자) -->
+	<update id="modifyByAdmin" parameterType="com.zeus.domain.Board">
+		UPDATE BOARD
+		SET TITLE = #{title},
+		CONTENT = #{content},
+		UPD_DATE = SYSDATE
+		WHERE BOARD_NO = #{boardNo}
+	</update>
+
+	<!-- 삭제(회원: 본인 글만) -->
+	<delete id="remove" parameterType="com.zeus.domain.Board">
+		DELETE FROM BOARD
+		WHERE BOARD_NO = #{boardNo}
+		AND WRITER = #{writer}
+	</delete>
+
+	<!-- 삭제(관리자) -->
+	<!-- 전제: Mapper 인터페이스에서 @Param("boardNo") int boardNo -->
+	<delete id="removeByAdmin" parameterType="int">
+		DELETE FROM BOARD
+		WHERE BOARD_NO = #{boardNo}
+	</delete>
+
 </mapper>
