@@ -91,8 +91,8 @@ public class BoardController {
 	// 게시글 수정 처리
 	@PostMapping("/modify")
 	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
-	public String modify(@ModelAttribute("pgrq") PageRequest pageRequest, Board board,
-			@AuthenticationPrincipal CustomUser customUser, RedirectAttributes rttr) throws Exception {
+	public String modify(PageRequest pageRequest, Board board, @AuthenticationPrincipal CustomUser customUser,
+			RedirectAttributes rttr) throws Exception {
 		boolean isAdmin = customUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 		int count;
 		if (isAdmin) {
@@ -108,8 +108,8 @@ public class BoardController {
 	// 게시글 삭제 처리
 	@PostMapping("/remove")
 	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
-	public String remove(@RequestParam int boardNo, RedirectAttributes rttr,
-			@AuthenticationPrincipal CustomUser customUser) throws Exception {
+	public String remove(@RequestParam int boardNo, PageRequest pageRequest,
+			@AuthenticationPrincipal CustomUser customUser, RedirectAttributes rttr) throws Exception {
 
 		boolean isAdmin = customUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
@@ -122,11 +122,11 @@ public class BoardController {
 			board.setBoardNo(boardNo);
 			board.setWriter(customUser.getUsername());
 
-			count = service.remove(board);
+			count = service.remove(board); // SQL에 writer 조건 필수
 		}
 
 		rttr.addFlashAttribute("msg", (count > 0) ? "SUCCESS" : "FAILED");
-		return "redirect:/board/list";
+		return "redirect:/board/list" + pageRequest.toUriString();
 	}
 
 }
