@@ -28,6 +28,38 @@
 		</sec:authorize>
 	</div>
 
+	<!-- ===== 검색 ===== -->
+	<div class="search-bar">
+		<form action="${pageContext.request.contextPath}/board/list"
+			method="get">
+			<input type="hidden" name="page" value="1" /> <input type="hidden"
+				name="sizePerPage" value="${pgrq.sizePerPage}" /> <select
+				name="searchType">
+				<option value="n"
+					${pgrq.searchType == null || pgrq.searchType == 'n' ? 'selected' : ''}>---</option>
+				<option value="t" ${pgrq.searchType == 't' ? 'selected' : ''}>Title</option>
+				<option value="c" ${pgrq.searchType == 'c' ? 'selected' : ''}>Content</option>
+				<option value="w" ${pgrq.searchType == 'w' ? 'selected' : ''}>Writer</option>
+				<option value="tc" ${pgrq.searchType == 'tc' ? 'selected' : ''}>Title
+					OR Content</option>
+				<option value="cw" ${pgrq.searchType == 'cw' ? 'selected' : ''}>Content
+					OR Writer</option>
+				<option value="tcw" ${pgrq.searchType == 'tcw' ? 'selected' : ''}>Title
+					OR Content OR Writer</option>
+			</select> <input type="text" name="keyword" value="${pgrq.keyword}"
+				placeholder="검색어 입력" />
+
+			<button type="submit" class="btn-new">검색</button>
+
+			<c:url var="resetUrl" value="/board/list">
+				<c:param name="page" value="1" />
+				<c:param name="sizePerPage" value="${pgrq.sizePerPage}" />
+			</c:url>
+			<a href="${pageContext.request.contextPath}${resetUrl}"
+				class="btn-new search-reset">초기화</a>
+		</form>
+	</div>
+
 	<table>
 		<thead>
 			<tr>
@@ -48,18 +80,20 @@
 
 				<c:otherwise>
 					<c:forEach items="${list}" var="board">
+						<c:url var="readUrl" value="/board/read">
+							<c:param name="boardNo" value="${board.boardNo}" />
+							<c:param name="page" value="${pgrq.page}" />
+							<c:param name="sizePerPage" value="${pgrq.sizePerPage}" />
+							<c:param name="searchType" value="${pgrq.searchType}" />
+							<c:param name="keyword" value="${pgrq.keyword}" />
+						</c:url>
+
 						<tr>
 							<td>${board.boardNo}</td>
-
 							<td class="td-title"><a
-								href="${pageContext.request.contextPath}/board/read
-									?boardNo=${board.boardNo}
-									&page=${pgrq.page}
-									&sizePerPage=${pgrq.sizePerPage}">
-									${board.title} </a></td>
-
+								href="${pageContext.request.contextPath}${readUrl}">${board.title}</a>
+							</td>
 							<td>${board.writer}</td>
-
 							<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm"
 									value="${board.regDate}" /></td>
 						</tr>
@@ -73,30 +107,36 @@
 	<div class="pagination">
 
 		<c:if test="${pagination.prev}">
-			<a
-				href="${pageContext.request.contextPath}/board/list
-				?page=${pagination.startPage - 1}
-				&sizePerPage=${pgrq.sizePerPage}">
-				&laquo; </a>
+			<c:url var="prevUrl" value="/board/list">
+				<c:param name="page" value="${pagination.startPage - 1}" />
+				<c:param name="sizePerPage" value="${pgrq.sizePerPage}" />
+				<c:param name="searchType" value="${pgrq.searchType}" />
+				<c:param name="keyword" value="${pgrq.keyword}" />
+			</c:url>
+			<a href="${pageContext.request.contextPath}${prevUrl}">&laquo;</a>
 		</c:if>
 
 		<c:forEach begin="${pagination.startPage}" end="${pagination.endPage}"
 			var="idx">
+			<c:url var="pageUrl" value="/board/list">
+				<c:param name="page" value="${idx}" />
+				<c:param name="sizePerPage" value="${pgrq.sizePerPage}" />
+				<c:param name="searchType" value="${pgrq.searchType}" />
+				<c:param name="keyword" value="${pgrq.keyword}" />
+			</c:url>
 
-			<a
-				href="${pageContext.request.contextPath}/board/list
-				?page=${idx}
-				&sizePerPage=${pgrq.sizePerPage}"
-				class="${idx == pgrq.page ? 'active' : ''}"> ${idx} </a>
-
+			<a href="${pageContext.request.contextPath}${pageUrl}"
+				class="${idx == pgrq.page ? 'active' : ''}">${idx}</a>
 		</c:forEach>
 
 		<c:if test="${pagination.next}">
-			<a
-				href="${pageContext.request.contextPath}/board/list
-				?page=${pagination.endPage + 1}
-				&sizePerPage=${pgrq.sizePerPage}">
-				&raquo; </a>
+			<c:url var="nextUrl" value="/board/list">
+				<c:param name="page" value="${pagination.endPage + 1}" />
+				<c:param name="sizePerPage" value="${pgrq.sizePerPage}" />
+				<c:param name="searchType" value="${pgrq.searchType}" />
+				<c:param name="keyword" value="${pgrq.keyword}" />
+			</c:url>
+			<a href="${pageContext.request.contextPath}${nextUrl}">&raquo;</a>
 		</c:if>
 
 	</div>
@@ -107,5 +147,7 @@
 	let result = "${msg}";
 	if (result === "SUCCESS") {
 		alert("<spring:message code='common.processSuccess' />");
+	} else if (result === "FAILED") {
+		alert("FAILED");
 	}
 </script>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeus.mapper.NoticeMapper">
+	<!-- 공지사항 등록 -->
+	<insert id="register" parameterType="Notice">
+		INSERT INTO NOTICE
+		(NOTICE_NO, TITLE, CONTENT)
+		VALUES (NOTICE_SEQ.NEXTVAL, #{title},
+		#{content})
+	</insert>
+	<!-- 공지사항 목록 -->
+	<select id="list"
+		parameterType="com.zeus.common.domain.PageRequest" resultType="Notice">
+  <![CDATA[
+    SELECT NOTICE_NO, TITLE, CONTENT, REG_DATE
+    FROM (
+      SELECT NOTICE_NO, TITLE, CONTENT, REG_DATE,
+             ROW_NUMBER() OVER (ORDER BY NOTICE_NO DESC, REG_DATE DESC) AS RN
+      FROM NOTICE
+      WHERE NOTICE_NO > 0
+    )
+    WHERE RN > #{pageStart}
+      AND RN <= (#{pageStart} + #{sizePerPage})
+  ]]>
+	</select>
+	<select id="count"
+		parameterType="com.zeus.common.domain.PageRequest" resultType="int">
+  <![CDATA[
+    SELECT COUNT(*)
+    FROM NOTICE
+    WHERE NOTICE_NO > 0
+  ]]>
+	</select>
+	<!-- 공지사항 정보 -->
+	<select id="read" parameterType="int" resultType="Notice">
+		SELECT
+		NOTICE_NO, TITLE, CONTENT, REG_DATE
+		FROM NOTICE
+		WHERE NOTICE_NO =
+		#{noticeNo}
+	</select>
+	<!-- 공지사항 수정 -->
+	<update id="modify" parameterType="Notice">
+		UPDATE NOTICE
+		SET TITLE =
+		#{title},
+		CONTENT = #{content}
+		WHERE NOTICE_NO = #{noticeNo}
+	</update>
+	<!-- 공지사항 삭제 -->
+	<delete id="remove" parameterType="int">
+		DELETE FROM NOTICE
+		WHERE
+		NOTICE_NO = #{noticeNo}
+	</delete>
+</mapper>

@@ -16,19 +16,53 @@
 		(#{boardNo}, #{title}, #{content}, #{writer})
 	</insert>
 
-	<!-- 게시글 목록 페이지 -->
+	<!-- 게시글 목록 페이지 (검색 + 페이징) -->
 	<select id="list"
 		parameterType="com.zeus.common.domain.PageRequest" resultType="Board">
-  <![CDATA[
-    SELECT board_no, title, content, writer, reg_date, upd_date
-    FROM (
-      SELECT b.*,
-             ROW_NUMBER() OVER (ORDER BY board_no DESC, reg_date DESC) AS rn
-      FROM board b
-    )
-    WHERE rn BETWEEN (#{pageStart} + 1) AND (#{pageStart} + #{sizePerPage})
-    ORDER BY rn
-  ]]>
+<![CDATA[
+  SELECT board_no, title, content, writer, reg_date, upd_date
+  FROM (
+    SELECT b.*,
+           ROW_NUMBER() OVER (ORDER BY board_no DESC, reg_date DESC) AS rn
+    FROM board b
+    WHERE 1=1
+]]>
+		<if
+			test="keyword != null and keyword != '' and searchType != null and !'n'.equals(searchType)">
+			<choose>
+				<when test="'t'.equals(searchType)">
+					AND b.title LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="'c'.equals(searchType)">
+					AND b.content LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="'w'.equals(searchType)">
+					AND b.writer LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="'tc'.equals(searchType)">
+					AND (b.title LIKE '%' || #{keyword} || '%'
+					OR
+					b.content LIKE '%' || #{keyword} || '%')
+				</when>
+				<when test="'cw'.equals(searchType)">
+					AND (b.content LIKE '%' || #{keyword} || '%'
+					OR
+					b.writer LIKE '%' || #{keyword} || '%')
+				</when>
+				<when test="'tcw'.equals(searchType)">
+					AND (b.title LIKE '%' || #{keyword} || '%'
+					OR
+					b.content LIKE '%' || #{keyword} || '%'
+					OR b.writer LIKE '%' ||
+					#{keyword} || '%')
+				</when>
+			</choose>
+		</if>
+<![CDATA[
+  )
+  WHERE rn BETWEEN (#{pageStart} + 1) AND (#{pageStart} + #{sizePerPage})
+  ORDER BY rn
+]]>
 	</select>
 	<!-- 게시글 상세 조회 -->
 	<select id="read" resultType="Board">
@@ -79,12 +113,40 @@
 		BOARD_NO = #{boardNo}
 	</delete>
 
-	<!-- 게시글 전체 건수를 조회한다. -->
-	<select id="count" resultType="int">
-	<![CDATA[
-		SELECT COUNT(BOARD_NO)
-		FROM BOARD
-		WHERE BOARD_NO > 0
-	]]>
+	<!-- 게시글 전체 건수를 조회한다. (검색 반영) -->
+	<select id="count"
+		parameterType="com.zeus.common.domain.PageRequest" resultType="int">
+<![CDATA[
+  SELECT COUNT(b.board_no)
+  FROM board b
+  WHERE b.board_no > 0
+]]>
+		<if
+			test="keyword != null and keyword != '' and searchType != null and !'n'.equals(searchType)">
+			<choose>
+				<when test="'t'.equals(searchType)">
+					AND b.title LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="'c'.equals(searchType)">
+					AND b.content LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="'w'.equals(searchType)">
+					AND b.writer LIKE '%' || #{keyword} || '%'
+				</when>
+				<when test="'tc'.equals(searchType)">
+					AND (b.title LIKE '%' || #{keyword} || '%'
+					OR b.content LIKE '%' || #{keyword} || '%')
+				</when>
+				<when test="'cw'.equals(searchType)">
+					AND (b.content LIKE '%' || #{keyword} || '%'
+					OR b.writer LIKE '%' || #{keyword} || '%')
+				</when>
+				<when test="'tcw'.equals(searchType)">
+					AND (b.title LIKE '%' || #{keyword} || '%'
+					OR b.content LIKE '%' || #{keyword} || '%'
+					OR b.writer LIKE '%' || #{keyword} || '%')
+				</when>
+			</choose>
+		</if>
 	</select>
 </mapper>

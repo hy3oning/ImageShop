@@ -20,6 +20,10 @@
 	<input type="hidden" id="page" name="page" value="${pgrq.page}">
 	<input type="hidden" id="sizePerPage" name="sizePerPage"
 		value="${pgrq.sizePerPage}">
+	<input type="hidden" id="searchType" name="searchType"
+		value="${pgrq.searchType}">
+	<input type="hidden" id="keyword" name="keyword"
+		value="${pgrq.keyword}">
 	<table>
 		<tr>
 			<td><spring:message code="board.title" /></td>
@@ -96,26 +100,37 @@
 				let formObj = $("#board");
 				let ctx = "${pageContext.request.contextPath}";
 
-				function getPageParams() {
+				function getParams() {
 					return {
 						page : $("#page").val(),
-						sizePerPage : $("#sizePerPage").val()
+						sizePerPage : $("#sizePerPage").val(),
+						searchType : $("#searchType").val(),
+						keyword : $("#keyword").val()
 					};
 				}
 
-				// 수정: boardNo + page + sizePerPage 유지해서 이동
+				function buildQuery(p) {
+					let q = "page=" + p.page + "&sizePerPage=" + p.sizePerPage;
+
+					if (p.searchType && p.searchType !== "n") {
+						q += "&searchType=" + encodeURIComponent(p.searchType);
+					}
+					if (p.keyword) {
+						q += "&keyword=" + encodeURIComponent(p.keyword);
+					}
+					return q;
+				}
+
 				$("#btnEdit").on(
 						"click",
 						function() {
 							let boardNo = $("#boardNo").val();
-							let p = getPageParams();
+							let p = getParams();
 
 							self.location = ctx + "/board/modify?boardNo="
-									+ boardNo + "&page=" + p.page
-									+ "&sizePerPage=" + p.sizePerPage;
+									+ boardNo + "&" + buildQuery(p);
 						});
 
-				// 삭제: confirm 후 POST 전송 (hidden값 boardNo/page/sizePerPage 같이 감)
 				$("#btnRemove").on("click", function() {
 					if (!confirm("정말 삭제하시겠습니까?"))
 						return;
@@ -124,14 +139,9 @@
 					formObj.submit();
 				});
 
-				// 목록: page + sizePerPage 유지해서 이동
-				$("#btnList").on(
-						"click",
-						function() {
-							let p = getPageParams();
-
-							self.location = ctx + "/board/list?page=" + p.page
-									+ "&sizePerPage=" + p.sizePerPage;
-						});
+				$("#btnList").on("click", function() {
+					let p = getParams();
+					self.location = ctx + "/board/list?" + buildQuery(p);
+				});
 			});
 </script>

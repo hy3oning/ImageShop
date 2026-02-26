@@ -5,8 +5,10 @@
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/codegroup.css">
+
 <h2>
 	<spring:message code="board.header.modify" />
 </h2>
@@ -15,9 +17,15 @@
 	action="${pageContext.request.contextPath}/board/modify" method="post"
 	id="board">
 	<form:hidden path="boardNo" id="boardNo" />
+
 	<input type="hidden" id="page" name="page" value="${pgrq.page}">
 	<input type="hidden" id="sizePerPage" name="sizePerPage"
 		value="${pgrq.sizePerPage}">
+	<input type="hidden" id="searchType" name="searchType"
+		value="${pgrq.searchType}">
+	<input type="hidden" id="keyword" name="keyword"
+		value="${pgrq.keyword}">
+
 	<table>
 		<tr>
 			<td><spring:message code="board.title" /></td>
@@ -75,17 +83,33 @@
 
 		const pageEl = document.getElementById("page");
 		const sizeEl = document.getElementById("sizePerPage");
+		const searchTypeEl = document.getElementById("searchType");
+		const keywordEl = document.getElementById("keyword");
+
+		function buildQuery() {
+			let q = "page=" + pageEl.value + "&sizePerPage=" + sizeEl.value;
+
+			const st = searchTypeEl ? searchTypeEl.value : "";
+			const kw = keywordEl ? keywordEl.value : "";
+
+			if (st && st !== "n")
+				q += "&searchType=" + encodeURIComponent(st);
+			if (kw)
+				q += "&keyword=" + encodeURIComponent(kw);
+
+			return q;
+		}
 
 		if (btnModify) {
 			btnModify.addEventListener("click", function() {
-				formObj.submit(); // hidden page/sizePerPage 같이 POST로 전송됨
+				// hidden(page/size/searchType/keyword) 같이 POST로 전송됨
+				formObj.submit();
 			});
 		}
 
 		if (btnList) {
 			btnList.addEventListener("click", function() {
-				location.href = ctx + "/board/list?page=" + pageEl.value
-						+ "&sizePerPage=" + sizeEl.value;
+				location.href = ctx + "/board/list?" + buildQuery();
 			});
 		}
 	});
