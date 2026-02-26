@@ -17,31 +17,31 @@
 	</insert>
 
 	<!-- 게시글 목록 페이지 -->
-	<select id="list" resultType="Board">
-<![CDATA[
-  SELECT BOARD_NO,
-         TITLE,
-         WRITER,
-         REG_DATE,
-         UPD_DATE
-  FROM BOARD
-  WHERE BOARD_NO > 0
-  ORDER BY BOARD_NO DESC
-]]>
+	<select id="list"
+		parameterType="com.zeus.common.domain.PageRequest" resultType="Board">
+  <![CDATA[
+    SELECT board_no, title, content, writer, reg_date, upd_date
+    FROM (
+      SELECT b.*,
+             ROW_NUMBER() OVER (ORDER BY board_no DESC, reg_date DESC) AS rn
+      FROM board b
+    )
+    WHERE rn BETWEEN (#{pageStart} + 1) AND (#{pageStart} + #{sizePerPage})
+    ORDER BY rn
+  ]]>
 	</select>
-
 	<!-- 게시글 상세 조회 -->
 	<select id="read" resultType="Board">
-<![CDATA[
-  SELECT BOARD_NO,
-         TITLE,
-         CONTENT,
-         WRITER,
-         REG_DATE,
-         UPD_DATE
-  FROM BOARD
-  WHERE BOARD_NO = #{boardNo}
-]]>
+	<![CDATA[
+  		SELECT BOARD_NO,
+         	TITLE,
+         	CONTENT,
+         	WRITER,
+         	REG_DATE,
+         	UPD_DATE
+  		FROM BOARD
+  		WHERE BOARD_NO = #{boardNo}
+	]]>
 	</select>
 	<!-- 게시글 수정 처리 -->
 	<update id="modify" parameterType="com.zeus.domain.Board">
@@ -67,13 +67,24 @@
 	<!-- 회원: 본인 글만 삭제 -->
 	<delete id="remove" parameterType="com.zeus.domain.Board">
 		DELETE FROM BOARD
-		WHERE BOARD_NO = #{boardNo}
+		WHERE
+		BOARD_NO = #{boardNo}
 		AND WRITER = #{writer}
 	</delete>
 
 	<!-- 관리자: 무조건 삭제 -->
 	<delete id="removeByAdmin" parameterType="int">
 		DELETE FROM BOARD
-		WHERE BOARD_NO = #{boardNo}
+		WHERE
+		BOARD_NO = #{boardNo}
 	</delete>
+
+	<!-- 게시글 전체 건수를 조회한다. -->
+	<select id="count" resultType="int">
+	<![CDATA[
+		SELECT COUNT(BOARD_NO)
+		FROM BOARD
+		WHERE BOARD_NO > 0
+	]]>
+	</select>
 </mapper>

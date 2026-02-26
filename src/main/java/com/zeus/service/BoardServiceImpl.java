@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.zeus.common.domain.PageRequest;
 import com.zeus.domain.Board;
 import com.zeus.mapper.BoardMapper;
 
@@ -22,8 +23,8 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public List<Board> list() throws Exception {
-		return mapper.list();
+	public List<Board> list(PageRequest pageRequest) throws Exception {
+		return mapper.list(pageRequest);
 	}
 
 	@Override
@@ -43,7 +44,6 @@ public class BoardServiceImpl implements BoardService {
 		return mapper.remove(board);
 	}
 
-
 	@Override
 	@Transactional
 	public int modifyByAdmin(Board board) throws Exception {
@@ -57,8 +57,8 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public int count() throws Exception {
-		return mapper.count();
+	public int count(PageRequest pageRequest) throws Exception {
+		return mapper.count(pageRequest);
 	}
 
 }

@@ -2,13 +2,14 @@ package com.zeus.service;
 
 import java.util.List;
 
+import com.zeus.common.domain.PageRequest;
 import com.zeus.domain.Board;
 
 public interface BoardService {
 
 	int register(Board board) throws Exception;
 
-	List<Board> list() throws Exception;
+	List<Board> list(PageRequest pageRequest) throws Exception;
 
 	Board read(int boardNo) throws Exception;
 
@@ -20,6 +21,6 @@ public interface BoardService {
 
 	int removeByAdmin(int boardNo)throws Exception;
 	
-	public int count() throws Exception;
+	int count(PageRequest pageRequest) throws Exception;
 
 }

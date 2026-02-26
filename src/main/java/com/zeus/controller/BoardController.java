@@ -7,11 +7,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.zeus.common.domain.PageRequest;
+import com.zeus.common.domain.Pagination;
 import com.zeus.common.security.domain.CustomUser;
 import com.zeus.domain.Board;
 import com.zeus.domain.Member;
@@ -54,20 +57,24 @@ public class BoardController {
 
 	// 게시글 목록 페이지
 	@GetMapping("/list")
-	public void list(Model model) throws Exception {
-		model.addAttribute("list", service.list());
+	public void list(@ModelAttribute("pgrq") PageRequest pageRequest, Model model) throws Exception {
+		model.addAttribute("list", service.list(pageRequest));
+		Pagination pagination = new Pagination();
+		pagination.setPageRequest(pageRequest);
+		pagination.setTotalCount(service.count(pageRequest));
+		model.addAttribute("pagination", pagination);
 	}
 
 	// 게시글 상세 페이지
 	@GetMapping("/read")
-	public void read(@RequestParam("boardNo") int boardNo, Model model) throws Exception {
+	public void read(@RequestParam int boardNo, Model model) throws Exception {
 		model.addAttribute("board", service.read(boardNo));
 	}
 
 	// 게시글 수정 페이지
 	@GetMapping("/modify")
 	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
-	public void modifyForm(@RequestParam("boardNo") int boardNo, Model model) throws Exception {
+	public void modifyForm(@RequestParam int boardNo, Model model) throws Exception {
 
 		model.addAttribute("board", service.read(boardNo));
 	}
