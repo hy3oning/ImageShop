@@ -42,13 +42,21 @@
 	</table>
 </form:form>
 <div>
+	<button type="submit" id="btnBuy">
+		<spring:message code="action.buy" />
+	</button>
+
 	<button type="submit" id="btnList">
 		<spring:message code="action.list" />
 	</button>
 </div>
 <script>
 	$(document).ready(function() {
-		var formObj = $("#item");
+		let formObj = $("#item");
+		$("#btnBuy").on("click", function() {
+			formObj.submit();
+		});
+
 		$("#btnList").on("click", function() {
 			self.location = "list";
 		});

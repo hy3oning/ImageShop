@@ -22,6 +22,10 @@
 								code="menu.board.member" /></a></td>
 					<td width="120"><a href="/notice/list"><spring:message
 								code="menu.notice.member" /></a></td>
+					<td width="120"><a href="/coin/charge"><spring:message
+								code="menu.coin.charge" /></a></td>
+					<td width="120"><a href="/coin/list"><spring:message
+								code="menu.coin.list" /></a></td>
 
 					<!-- 상품: 관리자면 '상품관리', 아니면 '상품' -->
 					<sec:authorize access="hasRole('ADMIN')">
