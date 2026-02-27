@@ -18,7 +18,7 @@ body {
 	padding: 20px;
 }
 
-/* 2. 최상위 레이아웃 정렬 (기존 레이아웃 유지하되 폼 박스만 별도 관리 권장) */
+/* 2. 최상위 레이아웃 정렬  */
 .header-wrapper, .menu-wrapper, .container, .footer-wrapper {
 	max-width: 1000px;
 	width: calc(100% - 32px);
@@ -94,7 +94,7 @@ table:not(.user_table):not(.form-table) td {
 	text-align: center;
 }
 
-/* 7. ✅ 입력 폼 디자인 통합 (비밀번호, 셀렉트박스 해결) */
+/* 7. ✅ 입력 폼 디자인 통합 */
 .user_table td, .form-table td {
 	text-align: left;
 	border: none;
@@ -108,7 +108,8 @@ table:not(.user_table):not(.form-table) td {
 }
 
 /* 모든 입력 요소 스타일 통일 */
-input[type="text"], input[type="password"], select, textarea {
+input[type="text"], input[type="password"], input[type="number"], select,
+	textarea {
 	width: 100%;
 	max-width: 450px;
 	padding: 12px 16px;
@@ -122,7 +123,8 @@ input[type="text"], input[type="password"], select, textarea {
 }
 
 /* 포커스 효과 */
-input[type="text"]:focus, input[type="password"]:focus, select:focus {
+input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus,
+	select:focus, textarea:focus {
 	border-color: #3b82f6;
 	box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
@@ -268,8 +270,6 @@ font[color="red"], .form-errors {
 	flex-wrap: wrap;
 }
 
-/* 검색 select / input은 기존 공통 input/select 스타일을 쓰되,
-   리스트 화면에서는 너무 길지 않게 제한 */
 .search-bar select {
 	width: 180px;
 	max-width: 180px;
@@ -280,30 +280,28 @@ font[color="red"], .form-errors {
 	max-width: 320px;
 }
 
-/* 버튼은 기존 .btn-new 스타일을 그대로 사용 */
-/* .search-bar .btn-new {} 필요 없음 */
-
-/* 검색 초기화 링크 버튼 느낌 맞추기 (a.btn-link 같이 쓰고 싶으면) */
 .search-reset {
 	background-color: #64748b;
 	color: white !important;
 }
 
-/* 반응형: 좁은 화면에서 세로로 보기 좋게 */
-@media (max-width: 640px) {
+@media ( max-width : 640px) {
 	.search-bar form {
 		justify-content: stretch;
 	}
-
-	.search-bar select,
-	.search-bar input[type="text"] {
+	.search-bar select, .search-bar input[type="text"] {
 		width: 100%;
 		max-width: 100%;
 	}
-
-	.search-bar button,
-	.search-bar a {
+	.search-bar button, .search-bar a {
 		width: 100%;
 		text-align: center;
 	}
+}
+
+.item-img {
+	width: 210px;
+	max-width: 100%;
+	height: auto;
+	display: block;
 }
