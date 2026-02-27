@@ -23,6 +23,16 @@
 					<td width="120"><a href="/notice/list"><spring:message
 								code="menu.notice.member" /></a></td>
 
+					<!-- 상품: 관리자면 '상품관리', 아니면 '상품' -->
+					<sec:authorize access="hasRole('ADMIN')">
+						<td width="120"><a href="/item/list"><spring:message
+									code="menu.item.admin" /></a></td>
+					</sec:authorize>
+					<sec:authorize access="!hasRole('ADMIN')">
+						<td width="120"><a href="/item/list"><spring:message
+									code="menu.item.member" /></a></td>
+					</sec:authorize>
+
 					<!-- 관리자 전용 메뉴 -->
 					<sec:authorize access="hasRole('ADMIN')">
 						<td width="140"><a href="/codegroup/list"><spring:message
