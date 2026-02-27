@@ -10,7 +10,8 @@
 			SELECT BOARD_SEQ.NEXTVAL FROM DUAL
 		</selectKey>
 		INSERT INTO BOARD (BOARD_NO, TITLE, CONTENT, WRITER)
-		VALUES (#{boardNo}, #{title}, #{content}, #{writer})
+		VALUES
+		(#{boardNo}, #{title}, #{content}, #{writer})
 	</insert>
 
 	<!-- 검색 조건 -->
@@ -19,79 +20,82 @@
 			test="searchType != null and searchType != '' and keyword != null and keyword != ''">
 			<choose>
 				<when test="searchType == 't'.toString()">
-					AND title LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					AND TITLE LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
 				</when>
 
 				<when test="searchType == 'c'.toString()">
-					AND content LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					AND CONTENT LIKE CONCAT('%', CONCAT(#{keyword},
+					'%'))
 				</when>
 
 				<when test="searchType == 'w'.toString()">
-					AND writer LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					AND WRITER LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
 				</when>
 
 				<when test="searchType == 'tc'.toString()">
 					AND (
 					title LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
-					OR content LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					OR CONTENT LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
 					)
 				</when>
 
 				<when test="searchType == 'cw'.toString()">
 					AND (
-					content LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
-					OR writer LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					CONTENT LIKE CONCAT('%', CONCAT(#{keyword},
+					'%'))
+					OR WRITER LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
 					)
 				</when>
 
 				<when test="searchType == 'tcw'.toString()">
 					AND (
-					title LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
-					OR content LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
-					OR writer LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					TITLE LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					OR CONTENT LIKE CONCAT('%', CONCAT(#{keyword}, '%'))
+					OR WRITER LIKE
+					CONCAT('%', CONCAT(#{keyword}, '%'))
 					)
 				</when>
 			</choose>
 		</if>
 	</sql>
 
-	<!-- 목록(페이징 + 검색) : Oracle rownum 정석 -->
+	<!-- 목록(페이징 + 검색) -->
 	<select id="list"
 		parameterType="com.zeus.common.domain.PageRequest"
 		resultType="com.zeus.domain.Board">
-<![CDATA[
-SELECT
-  board_no,
-  title,
-  content,
-  writer,
-  reg_date
-FROM (
-  SELECT
-    inner_tbl.board_no,
-    inner_tbl.title,
-    inner_tbl.content,
-    inner_tbl.writer,
-    inner_tbl.reg_date,
-    ROWNUM AS rnum
-  FROM (
-    SELECT
-      board_no,
-      title,
-      content,
-      writer,
-      reg_date
-    FROM board
-    WHERE board_no > 0
-]]>
+		<![CDATA[
+			SELECT
+  				BOARD_NO,
+  				TITLE,
+  				CONTENT,
+  				WRITER,
+  				REG_DATE
+			FROM (
+  				SELECT
+    				INNER_TBL.BOARD_NO,
+    				INNER_TBL.TITLE,
+    				INNER_TBL.CONTENT,
+    				INNER_TBL.WRITER,
+    				INNER_TBL.REG_DATE,
+    				ROWNUM AS RNUM
+  				FROM (
+    				SELECT
+      					BOARD_NO,
+      					TITLE,
+      					CONTENT,
+	      				WRITER,
+      					REG_DATE
+    				FROM BOARD
+    				WHERE BOARD_NO > 0
+		]]>
 		<include refid="search" />
-<![CDATA[
-    ORDER BY board_no DESC, reg_date DESC
-  ) inner_tbl
-  WHERE ROWNUM <= (#{sizePerPage} * #{page})
-)
-WHERE rnum >= (#{sizePerPage} * (#{page} - 1) + 1)
-]]>
+		<![CDATA[
+    		ORDER BY BOARD_NO DESC, REG_DATE DESC
+  			) INNER_TBL
+  			WHERE ROWNUM <= (#{sizePerPage} * #{page})
+			)
+			WHERE RNUM >= (#{sizePerPage} * (#{page} - 1) + 1)
+		]]>
 	</select>
 
 	<!-- 전체 건수(검색 포함) -->
@@ -99,8 +103,8 @@ WHERE rnum >= (#{sizePerPage} * (#{page} - 1) + 1)
 		parameterType="com.zeus.common.domain.PageRequest" resultType="int">
 <![CDATA[
 SELECT COUNT(*)
-FROM board
-WHERE board_no > 0
+FROM BOARD
+WHERE BOARD_NO > 0
 ]]>
 		<include refid="search" />
 	</select>
@@ -118,34 +122,39 @@ WHERE BOARD_NO = #{boardNo}
 	<!-- 수정(회원: 본인 글만) -->
 	<update id="modify" parameterType="com.zeus.domain.Board">
 		UPDATE BOARD
-		SET TITLE = #{title},
+		SET TITLE =
+		#{title},
 		CONTENT = #{content},
 		UPD_DATE = SYSDATE
-		WHERE BOARD_NO = #{boardNo}
+		WHERE BOARD_NO =
+		#{boardNo}
 		AND WRITER = #{writer}
 	</update>
 
 	<!-- 수정(관리자) -->
 	<update id="modifyByAdmin" parameterType="com.zeus.domain.Board">
 		UPDATE BOARD
-		SET TITLE = #{title},
+		SET TITLE =
+		#{title},
 		CONTENT = #{content},
 		UPD_DATE = SYSDATE
-		WHERE BOARD_NO = #{boardNo}
+		WHERE BOARD_NO =
+		#{boardNo}
 	</update>
 
 	<!-- 삭제(회원: 본인 글만) -->
 	<delete id="remove" parameterType="com.zeus.domain.Board">
 		DELETE FROM BOARD
-		WHERE BOARD_NO = #{boardNo}
+		WHERE
+		BOARD_NO = #{boardNo}
 		AND WRITER = #{writer}
 	</delete>
 
 	<!-- 삭제(관리자) -->
-	<!-- 전제: Mapper 인터페이스에서 @Param("boardNo") int boardNo -->
 	<delete id="removeByAdmin" parameterType="int">
 		DELETE FROM BOARD
-		WHERE BOARD_NO = #{boardNo}
+		WHERE
+		BOARD_NO = #{boardNo}
 	</delete>
 
 </mapper>
