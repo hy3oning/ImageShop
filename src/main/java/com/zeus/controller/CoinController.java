@@ -33,6 +33,7 @@ public class CoinController {
 	@PreAuthorize("hasRole('MEMBER')")
 	public String charge(int amount, RedirectAttributes rttr, @AuthenticationPrincipal CustomUser customUser)
 			throws Exception {
+		// 코인 충전 최소 최대
 		if (amount <= 0 || amount > 1_000_000) {
 			rttr.addFlashAttribute("msgKey", "common.invalidAmount");
 			return "redirect:/coin/charge";
@@ -57,6 +58,14 @@ public class CoinController {
 	public void list(Model model, @AuthenticationPrincipal CustomUser customUser) throws Exception {
 		int userNo = customUser.getMember().getUserNo();
 		model.addAttribute("list", service.list(userNo));
+	}
+
+	// 사용자 구매 내역 보기 요청을 처리한다.
+	@GetMapping("/listPay")
+	@PreAuthorize("hasRole('MEMBER')")
+	public void listPayHistory(Model model, @AuthenticationPrincipal CustomUser customUser) throws Exception {
+		int userNo = customUser.getMember().getUserNo();
+		model.addAttribute("list", service.listPayHistory(userNo));
 	}
 
 	@GetMapping("/success")

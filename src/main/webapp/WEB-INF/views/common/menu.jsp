@@ -26,7 +26,10 @@
 								code="menu.coin.charge" /></a></td>
 					<td width="120"><a href="/coin/list"><spring:message
 								code="menu.coin.list" /></a></td>
-
+					<td width="120"><a href="/useritem/list"><spring:message
+								code="menu.useritem.list" /></a></td>
+					<td width="120"><a href="/coin/listPay"><spring:message
+								code="menu.coin.listPay" /></a></td>
 					<!-- 상품: 관리자면 '상품관리', 아니면 '상품' -->
 					<sec:authorize access="hasRole('ADMIN')">
 						<td width="120"><a href="/item/list"><spring:message

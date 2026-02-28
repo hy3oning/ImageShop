@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -24,8 +25,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.zeus.common.security.domain.CustomUser;
 import com.zeus.domain.Item;
+import com.zeus.domain.Member;
 import com.zeus.service.ItemService;
+import com.zeus.service.UserItemService;
 
 @Controller
 @RequestMapping("/item")
@@ -33,6 +37,9 @@ public class ItemController {
 
 	@Autowired
 	private ItemService itemService;
+
+	@Autowired
+	private UserItemService userItemService;
 
 	@Value("${upload.path}")
 	private String uploadPath;
@@ -240,6 +247,38 @@ public class ItemController {
 		default:
 			return null;
 		}
+	}
+
+	@PostMapping("/buy")
+	@PreAuthorize("hasRole('MEMBER')")
+	public String buy(@RequestParam int itemId, RedirectAttributes rttr, @AuthenticationPrincipal CustomUser customUser)
+			throws Exception {
+
+		Member member = customUser.getMember();
+		Item item = itemService.read(itemId);
+		if (item == null) {
+			rttr.addFlashAttribute("msgKey", "common.processFailed"); // 또는 common.notFound 만들어도 됨
+			return "redirect:/item/list";
+		}
+
+		try {
+			userItemService.register(member, item);
+			rttr.addFlashAttribute("msgKey", "item.purchaseComplete");
+			return "redirect:/item/success";
+		} catch (IllegalStateException e) {
+			// 서비스에서 NOT_ENOUGH_COIN 던지는 경우만 명확히 분기
+			if ("NOT_ENOUGH_COIN".equals(e.getMessage())) {
+				rttr.addFlashAttribute("msgKey", "coin.notEnoughCoin");
+			} else {
+				rttr.addFlashAttribute("msgKey", "common.processFailed");
+			}
+			return "redirect:/item/read?itemId=" + itemId;
+		}
+	}
+
+	@GetMapping("/success")
+	public String success() throws Exception {
+		return "item/success";
 	}
 
 }

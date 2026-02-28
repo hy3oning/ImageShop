@@ -20,4 +20,6 @@ public interface MemberService {
 
 	public int setupAdmin(Member member) throws Exception;
 
+	public int getCoin(int userNo)throws Exception;
+
 }

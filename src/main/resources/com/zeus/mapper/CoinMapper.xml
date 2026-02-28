@@ -5,7 +5,8 @@
 <mapper namespace="com.zeus.mapper.CoinMapper">
 
 	<insert id="register" parameterType="com.zeus.domain.ChargeCoin">
-		INSERT INTO charge_coin_history (
+		INSERT INTO
+		charge_coin_history (
 		history_no,
 		user_no,
 		amount
@@ -18,7 +19,8 @@
 
 	<update id="charge" parameterType="com.zeus.domain.ChargeCoin">
 		UPDATE member
-		SET coin = coin + #{amount},
+		SET coin = coin +
+		#{amount},
 		upd_date = SYSDATE
 		WHERE user_no = #{userNo}
 	</update>
@@ -36,5 +38,48 @@
     ORDER BY history_no DESC
     ]]>
 	</select>
-
+	<!-- 코인 차감(결제): 잔액이 충분할 때만 차감 -->
+	<update id="pay" parameterType="com.zeus.domain.PayCoin">
+		UPDATE member
+		SET coin = coin -
+		#{amount},
+		upd_date = SYSDATE
+		WHERE user_no = #{userNo}
+		AND coin >=
+		#{amount}
+	</update>
+	<!-- 구매 내역 등록 -->
+	<insert id="createPayHistory">
+		INSERT INTO pay_coin_history
+		(
+		history_no,
+		user_no,
+		item_id,
+		amount
+		)
+		VALUES
+		(
+		pay_coin_history_seq.NEXTVAL,
+		#{userNo},
+		#{itemId},
+		#{amount}
+		)
+	</insert>
+	<!-- 구매 내역 조회 -->
+	<select id="listPayHistory" resultType="PayCoin">
+		<![CDATA[
+			SELECT 
+				a.history_no,
+				a.user_no,
+				a.item_id,
+				b.item_name,
+				a.amount,
+				a.reg_date
+			FROM pay_coin_history a INNER JOIN item b ON a.item_id =
+				b.item_id
+			WHERE a.history_no > 0
+			AND user_no = #{userNo}
+			ORDER BY a.history_no DESC
+		]]>
+	</select>
 </mapper>

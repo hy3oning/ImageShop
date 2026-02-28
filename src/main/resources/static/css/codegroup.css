@@ -305,3 +305,13 @@ font[color="red"], .form-errors {
 	height: auto;
 	display: block;
 }
+
+.btn-download {
+	background-color: #3b82f6;
+	color: #fff !important;
+}
+
+.btn-download:hover {
+	transform: translateY(-2px);
+	filter: brightness(1.1);
+}
