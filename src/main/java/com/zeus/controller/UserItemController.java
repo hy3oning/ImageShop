@@ -75,15 +75,18 @@ public class UserItemController {
 		int loginUserNo = customUser.getMember().getUserNo();
 		boolean isAdmin = customUser.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
+		// 1) 구매상품 조회
 		UserItem userItem = service.read(userItemNo);
 		if (userItem == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
+		// 2) 권한 검사 (관리자는 OK, 일반 유저는 본인 것만)
 		if (!isAdmin && userItem.getUserNo() != loginUserNo) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 
+		// 3) 파일 경로/존재 검사
 		String fullName = userItem.getPictureUrl();
 		if (fullName == null || fullName.isBlank()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -94,16 +97,24 @@ public class UserItemController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 
-		String fileName = fullName.substring(fullName.indexOf("_") + 1);
+		// 4) 다운로드 헤더
+		String fileName = fullName.contains("_") ? fullName.substring(fullName.indexOf("_") + 1) : fullName;
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		headers.add("Content-Disposition",
 				"attachment;filename=\"" + new String(fileName.getBytes("UTF-8"), "ISO-8859-1") + "\"");
 
+		// 5) 파일 바이트 반환
 		try (InputStream in = new FileInputStream(file)) {
 			return new ResponseEntity<>(IOUtils.toByteArray(in), headers, HttpStatus.OK);
 		}
+	}
+
+	// 본인 상품 예외 처리
+	@GetMapping("/notMyItem")
+	@PreAuthorize("hasAnyRole('ADMIN','MEMBER')")
+	public void notMyItem(Model model) throws Exception {
 	}
 
 }

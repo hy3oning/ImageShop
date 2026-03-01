@@ -74,4 +74,10 @@ public class CoinController {
 		return "coin/success";
 	}
 
+	// 코인 부족 예외 처리
+	@GetMapping("/notEnoughCoin")
+	@PreAuthorize("hasRole('MEMBER')")
+	public void notEnoughCoin(Model model) throws Exception {
+	}
+
 }

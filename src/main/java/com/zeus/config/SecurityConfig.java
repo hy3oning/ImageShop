@@ -43,7 +43,7 @@ public class SecurityConfig {
 
 				// 2) 인가
 				.authorizeHttpRequests(auth -> auth.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR)
-						.permitAll().requestMatchers("/accessError", "/login", "/logout", "/css/**", "/js/**", "/error")
+						.permitAll().requestMatchers("/accessDenied", "/login", "/logout", "/css/**", "/js/**", "/error")
 						.permitAll().requestMatchers("/board/**").authenticated().requestMatchers("/manager/**")
 						.hasRole("MANAGER").requestMatchers("/admin/**").hasRole("ADMIN").anyRequest().permitAll())
 

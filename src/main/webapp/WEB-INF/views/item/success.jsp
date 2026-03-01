@@ -10,7 +10,7 @@
 
 <div class="container">
     <h2>
-        <spring:message code="${msg}" />
+        <spring:message code="${msgKey}" />
     </h2>
 
     <div class="button-container">

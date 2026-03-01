@@ -10,6 +10,7 @@ import com.zeus.domain.Item;
 import com.zeus.domain.Member;
 import com.zeus.domain.PayCoin;
 import com.zeus.domain.UserItem;
+import com.zeus.exception.NotEnoughCoinException;
 import com.zeus.mapper.CoinMapper;
 import com.zeus.mapper.UserItemMapper;
 
@@ -35,7 +36,7 @@ public class UserItemServiceImpl implements UserItemService {
 
 		int updated = coinMapper.pay(payCoin);
 		if (updated == 0)
-			throw new IllegalStateException("NOT_ENOUGH_COIN");
+			throw new NotEnoughCoinException("코인이 부족합니다.");
 
 		coinMapper.createPayHistory(payCoin);
 
