@@ -24,6 +24,7 @@ import com.zeus.common.security.domain.CustomUser;
 import com.zeus.domain.Board;
 import com.zeus.domain.Member;
 import com.zeus.service.BoardService;
+import com.zeus.service.ReplyService;
 
 @Controller
 @RequestMapping("/board")
@@ -31,6 +32,8 @@ public class BoardController {
 
 	@Autowired
 	private BoardService service;
+	@Autowired
+	private ReplyService replyService;
 
 	// 게시글 등록 페이지
 	@GetMapping("/register")
@@ -88,6 +91,7 @@ public class BoardController {
 			throws Exception {
 
 		model.addAttribute("board", service.read(boardNo));
+		model.addAttribute("replyList", replyService.list(boardNo));
 		return "board/read";
 	}
 

@@ -10,7 +10,11 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/codegroup.css">
-
+<c:if test="${not empty msg}">
+	<script>
+		alert('${msg}');
+	</script>
+</c:if>
 <h2>
 	<spring:message code="board.header.read" />
 </h2>
@@ -94,6 +98,51 @@
 	</div>
 </form:form>
 
+<hr>
+<h3>댓글</h3>
+
+<!-- 댓글 목록 -->
+<c:forEach var="r" items="${replyList}">
+	<div style="border: 1px solid #ddd; padding: 10px; margin: 10px 0;">
+		<div>
+			<b>${r.writer}</b> &nbsp;|&nbsp;
+			<fmt:formatDate value="${r.regDate}" pattern="yyyy-MM-dd HH:mm" />
+		</div>
+
+		<div style="margin-top: 6px; white-space: pre-wrap;">${r.content}</div>
+
+		<!-- 로그인한 사용자만 보이게 -->
+		<sec:authorize access="isAuthenticated()">
+			<!-- 작성자만 삭제 버튼 노출 (JSP에서 1차) -->
+			<c:if test="${r.writer eq pageContext.request.userPrincipal.name}">
+				<form action="${pageContext.request.contextPath}/reply/remove"
+					method="post" style="margin-top: 8px;">
+					<input type="hidden" name="replyNo" value="${r.replyNo}"> <input
+						type="hidden" name="boardNo" value="${r.boardNo}">
+					<button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">
+						삭제</button>
+				</form>
+			</c:if>
+		</sec:authorize>
+	</div>
+</c:forEach>
+
+<!-- 댓글 등록 -->
+<sec:authorize access="isAuthenticated()">
+	<form action="${pageContext.request.contextPath}/reply/register"
+		method="post">
+		<input type="hidden" name="boardNo" value="${board.boardNo}">
+		<textarea name="content" rows="4" style="width: 100%;"
+			placeholder="댓글을 입력하세요"></textarea>
+		<div style="margin-top: 8px;">
+			<button type="submit">댓글 등록</button>
+		</div>
+	</form>
+</sec:authorize>
+
+<sec:authorize access="!isAuthenticated()">
+	<p>댓글을 작성하려면 로그인하세요.</p>
+</sec:authorize>
 <script>
 	$(document).ready(
 			function() {

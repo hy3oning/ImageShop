@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeus.mapper.ReplyMapper">
+
+	<insert id="register" parameterType="com.zeus.domain.Reply">
+		<selectKey keyProperty="replyNo" resultType="int"
+			order="BEFORE">
+			SELECT REPLY_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO REPLY (REPLY_NO, BOARD_NO, CONTENT, WRITER)
+		VALUES
+		(#{replyNo}, #{boardNo}, #{content}, #{writer})
+	</insert>
+
+	<select id="listByBoardNo" resultType="com.zeus.domain.Reply">
+		SELECT
+		REPLY_NO,
+		BOARD_NO,
+		CONTENT,
+		WRITER,
+		REG_DATE,
+		UPD_DATE
+		FROM REPLY
+		WHERE BOARD_NO = #{boardNo}
+		ORDER BY REPLY_NO ASC
+	</select>
+
+	<select id="read" resultType="com.zeus.domain.Reply">
+		SELECT
+		REPLY_NO,
+		BOARD_NO,
+		CONTENT,
+		WRITER,
+		REG_DATE,
+		UPD_DATE
+		FROM REPLY
+		WHERE REPLY_NO = #{replyNo}
+	</select>
+
+	<delete id="remove">
+		DELETE FROM REPLY
+		WHERE REPLY_NO = #{replyNo}
+	</delete>
+
+</mapper>
