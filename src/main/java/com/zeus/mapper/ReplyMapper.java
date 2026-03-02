@@ -14,4 +14,6 @@ public interface ReplyMapper {
 	int remove(@Param("replyNo") Integer replyNo);
 
 	Reply read(@Param("replyNo") Integer replyNo);
+
+	void modify(Reply reply);
 }

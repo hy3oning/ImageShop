@@ -25,17 +25,30 @@
 		ORDER BY REPLY_NO ASC
 	</select>
 
-	<select id="read" resultType="com.zeus.domain.Reply">
+	<!-- 댓글 1개 조회: 작성자 체크용 -->
+	<select id="read" parameterType="int"
+		resultType="com.zeus.domain.Reply">
 		SELECT
 		REPLY_NO,
 		BOARD_NO,
-		CONTENT,
 		WRITER,
+		CONTENT,
 		REG_DATE,
 		UPD_DATE
 		FROM REPLY
-		WHERE REPLY_NO = #{replyNo}
+		WHERE REPLY_NO =
+		#{replyNo}
 	</select>
+
+	<!-- 댓글 수정 -->
+	<update id="modify" parameterType="com.zeus.domain.Reply">
+		UPDATE REPLY
+		SET
+		CONTENT =
+		#{content},
+		UPD_DATE = SYSDATE
+		WHERE REPLY_NO = #{replyNo}
+	</update>
 
 	<delete id="remove">
 		DELETE FROM REPLY

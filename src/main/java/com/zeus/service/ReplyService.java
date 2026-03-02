@@ -12,4 +12,6 @@ public interface ReplyService {
 	void remove(Integer replyNo) throws Exception;
 
 	Reply read(Integer replyNo) throws Exception;
+
+	void modify(Reply reply, String loginId) throws Exception;
 }

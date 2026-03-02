@@ -10,17 +10,20 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/css/codegroup.css">
+
 <c:if test="${not empty msg}">
 	<script>
 		alert('${msg}');
 	</script>
 </c:if>
+
 <h2>
 	<spring:message code="board.header.read" />
 </h2>
 
 <form:form modelAttribute="board" id="board" method="post">
 	<form:hidden path="boardNo" id="boardNo" />
+
 	<input type="hidden" id="page" name="page" value="${pgrq.page}">
 	<input type="hidden" id="sizePerPage" name="sizePerPage"
 		value="${pgrq.sizePerPage}">
@@ -28,6 +31,7 @@
 		value="${pgrq.searchType}">
 	<input type="hidden" id="keyword" name="keyword"
 		value="${pgrq.keyword}">
+
 	<table>
 		<tr>
 			<td><spring:message code="board.title" /></td>
@@ -47,7 +51,6 @@
 			<td><font color="red"><form:errors path="content" /></font></td>
 		</tr>
 
-		<!-- 작성일 -->
 		<tr>
 			<td><spring:message code="board.regdate" /></td>
 			<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm"
@@ -55,7 +58,6 @@
 			<td></td>
 		</tr>
 
-		<!-- 수정된 경우에만 수정일 표시 -->
 		<c:if
 			test="${board.updDate ne null and board.updDate ne board.regDate}">
 			<tr>
@@ -99,50 +101,84 @@
 </form:form>
 
 <hr>
-<h3>댓글</h3>
 
-<!-- 댓글 목록 -->
-<c:forEach var="r" items="${replyList}">
-	<div style="border: 1px solid #ddd; padding: 10px; margin: 10px 0;">
-		<div>
-			<b>${r.writer}</b> &nbsp;|&nbsp;
-			<fmt:formatDate value="${r.regDate}" pattern="yyyy-MM-dd HH:mm" />
-		</div>
+<!-- =========================
+     댓글 섹션
+     ========================= -->
+<div class="reply-section">
+	<h3 class="reply-title">댓글</h3>
 
-		<div style="margin-top: 6px; white-space: pre-wrap;">${r.content}</div>
+	<!-- 댓글 목록 -->
+	<c:forEach var="r" items="${replyList}">
+		<div class="reply-card">
+			<div class="reply-meta">
+				<b class="reply-writer">${r.writer}</b> <span class="reply-sep">|</span>
+				<span class="reply-date"> <fmt:formatDate
+						value="${r.regDate}" pattern="yyyy-MM-dd HH:mm" />
+				</span>
+			</div>
 
-		<!-- 로그인한 사용자만 보이게 -->
-		<sec:authorize access="isAuthenticated()">
-			<!-- 작성자만 삭제 버튼 노출 (JSP에서 1차) -->
-			<c:if test="${r.writer eq pageContext.request.userPrincipal.name}">
-				<form action="${pageContext.request.contextPath}/reply/remove"
-					method="post" style="margin-top: 8px;">
+			<div class="reply-content">${r.content}</div>
+
+			<!-- 로그인한 사용자만 -->
+			<sec:authorize access="isAuthenticated()">
+				<!-- 작성자만 수정/삭제 -->
+				<div class="reply-actions">
+					<button type="button"
+						class="reply-btn reply-btn-primary btn-reply-edit"
+						data-replyno="${r.replyNo}">수정</button>
+
+					<form class="reply-inline-form"
+						action="${pageContext.request.contextPath}/reply/remove"
+						method="post">
+						<input type="hidden" name="replyNo" value="${r.replyNo}">
+						<input type="hidden" name="boardNo" value="${r.boardNo}">
+						<button type="submit" class="reply-btn reply-btn-danger"
+							onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+					</form>
+				</div>
+
+				<form class="reply-edit-form" id="replyEditForm-${r.replyNo}"
+					action="${pageContext.request.contextPath}/reply/modify"
+					method="post" style="display: none; margin-top: 10px;">
 					<input type="hidden" name="replyNo" value="${r.replyNo}"> <input
 						type="hidden" name="boardNo" value="${r.boardNo}">
-					<button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">
-						삭제</button>
+
+					<textarea name="content" class="reply-textarea" rows="3">${r.content}</textarea>
+
+					<div class="reply-form-actions">
+						<button type="submit" class="reply-btn reply-btn-primary"
+							onclick="return confirm('댓글을 수정할까요?');">저장</button>
+
+						<button type="button"
+							class="reply-btn reply-btn-cancel btn-reply-cancel"
+							data-replyno="${r.replyNo}">취소</button>
+					</div>
 				</form>
-			</c:if>
-		</sec:authorize>
-	</div>
-</c:forEach>
-
-<!-- 댓글 등록 -->
-<sec:authorize access="isAuthenticated()">
-	<form action="${pageContext.request.contextPath}/reply/register"
-		method="post">
-		<input type="hidden" name="boardNo" value="${board.boardNo}">
-		<textarea name="content" rows="4" style="width: 100%;"
-			placeholder="댓글을 입력하세요"></textarea>
-		<div style="margin-top: 8px;">
-			<button type="submit">댓글 등록</button>
+			</sec:authorize>
 		</div>
-	</form>
-</sec:authorize>
+	</c:forEach>
 
-<sec:authorize access="!isAuthenticated()">
-	<p>댓글을 작성하려면 로그인하세요.</p>
-</sec:authorize>
+	<!-- 댓글 등록 -->
+	<sec:authorize access="isAuthenticated()">
+		<form class="reply-form"
+			action="${pageContext.request.contextPath}/reply/register"
+			method="post">
+			<input type="hidden" name="boardNo" value="${board.boardNo}">
+			<textarea class="reply-textarea" name="content" rows="4"
+				placeholder="댓글을 입력하세요"></textarea>
+			<div class="reply-form-actions">
+				<button type="submit" class="reply-btn reply-btn-primary">댓글
+					등록</button>
+			</div>
+		</form>
+	</sec:authorize>
+
+	<sec:authorize access="!isAuthenticated()">
+		<p class="reply-guest">댓글을 작성하려면 로그인하세요.</p>
+	</sec:authorize>
+</div>
+
 <script>
 	$(document).ready(
 			function() {
@@ -193,4 +229,16 @@
 					self.location = ctx + "/board/list?" + buildQuery(p);
 				});
 			});
+
+	// 댓글 수정 폼 토글
+	$(document).on("click", ".btn-reply-edit", function() {
+		let replyNo = $(this).data("replyno");
+		$("#replyEditForm-" + replyNo).slideToggle(150);
+	});
+
+	// 댓글 수정 취소
+	$(document).on("click", ".btn-reply-cancel", function() {
+		let replyNo = $(this).data("replyno");
+		$("#replyEditForm-" + replyNo).slideUp(150);
+	});
 </script>

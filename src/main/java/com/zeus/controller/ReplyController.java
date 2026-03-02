@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.zeus.common.security.domain.CustomUser;
@@ -60,6 +61,24 @@ public class ReplyController {
 		replyService.remove(replyNo);
 
 		rttr.addFlashAttribute("msg", "댓글 삭제 완료");
+		return "redirect:/board/read?boardNo=" + boardNo;
+	}
+
+	@PostMapping("/modify")
+	@PreAuthorize("isAuthenticated()")
+	public String modify(@RequestParam int replyNo, @RequestParam int boardNo, @RequestParam String content,
+			Authentication authentication, RedirectAttributes rttr) throws Exception{
+
+		String loginId = authentication.getName();
+
+		Reply reply = new Reply();
+		reply.setReplyNo(replyNo);
+		reply.setBoardNo(boardNo);
+		reply.setContent(content);
+
+		replyService.modify(reply, loginId);
+
+		rttr.addFlashAttribute("msg", "댓글이 수정되었습니다.");
 		return "redirect:/board/read?boardNo=" + boardNo;
 	}
 }
