@@ -38,11 +38,20 @@ public class ItemController {
 	@Autowired
 	private ItemService itemService;
 
+//	// 회원관리 서비스
+//	@Autowired
+//	private MemberService memberService;
+
+	// 사용자 구매 비즈니스 서비스
 	@Autowired
 	private UserItemService userItemService;
 
 	@Value("${upload.path}")
 	private String uploadPath;
+
+//	// 메시지를 처리할 MessageSource를 필드로 선언한다.
+//	@Autowired
+//	private MessageSource messageSource;
 
 	// 상품 등록 페이지
 	@GetMapping("/register")
@@ -249,6 +258,7 @@ public class ItemController {
 		}
 	}
 
+	// 상품 구매 요청 처리
 	@PostMapping("/buy")
 	@PreAuthorize("hasRole('MEMBER')")
 	public String buy(@RequestParam int itemId, RedirectAttributes rttr, @AuthenticationPrincipal CustomUser customUser)
@@ -275,6 +285,22 @@ public class ItemController {
 			return "redirect:/item/read?itemId=" + itemId;
 		}
 	}
+
+//	// 상품 구매 요청을 처리한다.
+//	@PostMapping("/buy")
+//	@PreAuthorize("hasAnyRole('MEMBER','ADMIN')")
+//	public String buy(Integer itemId, RedirectAttributes rttr, Authentication authentication) throws Exception {
+//		// 인증된 사용자 정보를 가져오고,
+//		CustomUser customUser = (CustomUser) authentication.getPrincipal();
+//		Member member = customUser.getMember();
+//		int userNo = member.getUserNo();
+//		member.setCoin(memberService.getCoin(userNo));
+//		Item item = itemService.read(itemId);
+//		userItemService.register(member, item);
+//		String message = messageSource.getMessage("item.purchaseComplete", null, Locale.KOREAN);
+//		rttr.addFlashAttribute("msg", message);
+//		return "redirect:/item/success";
+//	}
 
 	@GetMapping("/success")
 	public String success() throws Exception {
