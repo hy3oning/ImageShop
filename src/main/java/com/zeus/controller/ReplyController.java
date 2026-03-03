@@ -38,7 +38,7 @@ public class ReplyController {
 		return "redirect:/board/read?boardNo=" + reply.getBoardNo();
 	}
 
-	// 댓글 삭제 (작성자만 삭제 가능)
+	// 댓글 삭제
 	@PostMapping("/remove")
 	@PreAuthorize("hasRole('MEMBER')")
 	public String remove(Integer replyNo, Integer boardNo, Authentication authentication, RedirectAttributes rttr)

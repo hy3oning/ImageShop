@@ -25,7 +25,7 @@
 		ORDER BY REPLY_NO ASC
 	</select>
 
-	<!-- 댓글 1개 조회: 작성자 체크용 -->
+	<!-- 댓글 조회 -->
 	<select id="read" parameterType="int"
 		resultType="com.zeus.domain.Reply">
 		SELECT

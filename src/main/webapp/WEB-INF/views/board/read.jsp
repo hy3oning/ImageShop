@@ -21,6 +21,9 @@
 	<spring:message code="board.header.read" />
 </h2>
 
+<!-- 로그인 정보 -->
+<sec:authentication property="principal" var="pinfo" />
+
 <form:form modelAttribute="board" id="board" method="post">
 	<form:hidden path="boardNo" id="boardNo" />
 
@@ -70,7 +73,6 @@
 	</table>
 
 	<div style="margin-top: 16px;">
-		<sec:authentication property="principal" var="pinfo" />
 
 		<!-- 관리자 -->
 		<sec:authorize access="hasRole('ROLE_ADMIN')">
@@ -120,41 +122,42 @@
 
 			<div class="reply-content">${r.content}</div>
 
-			<!-- 로그인한 사용자만 -->
+			<!-- 작성자에게만 수정/삭제/수정폼 보이게 -->
 			<sec:authorize access="isAuthenticated()">
-				<!-- 작성자만 수정/삭제 -->
-				<div class="reply-actions">
-					<button type="button"
-						class="reply-btn reply-btn-primary btn-reply-edit"
-						data-replyno="${r.replyNo}">수정</button>
+				<c:if test="${pinfo.username eq r.writer}">
+					<div class="reply-actions">
+						<button type="button"
+							class="reply-btn reply-btn-primary btn-reply-edit"
+							data-replyno="${r.replyNo}">수정</button>
 
-					<form class="reply-inline-form"
-						action="${pageContext.request.contextPath}/reply/remove"
-						method="post">
+						<form class="reply-inline-form"
+							action="${pageContext.request.contextPath}/reply/remove"
+							method="post">
+							<input type="hidden" name="replyNo" value="${r.replyNo}">
+							<input type="hidden" name="boardNo" value="${r.boardNo}">
+							<button type="submit" class="reply-btn reply-btn-danger"
+								onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+						</form>
+					</div>
+
+					<form class="reply-edit-form" id="replyEditForm-${r.replyNo}"
+						action="${pageContext.request.contextPath}/reply/modify"
+						method="post" style="display: none; margin-top: 10px;">
 						<input type="hidden" name="replyNo" value="${r.replyNo}">
 						<input type="hidden" name="boardNo" value="${r.boardNo}">
-						<button type="submit" class="reply-btn reply-btn-danger"
-							onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+
+						<textarea name="content" class="reply-textarea" rows="3">${r.content}</textarea>
+
+						<div class="reply-form-actions">
+							<button type="submit" class="reply-btn reply-btn-primary"
+								onclick="return confirm('댓글을 수정할까요?');">저장</button>
+
+							<button type="button"
+								class="reply-btn reply-btn-cancel btn-reply-cancel"
+								data-replyno="${r.replyNo}">취소</button>
+						</div>
 					</form>
-				</div>
-
-				<form class="reply-edit-form" id="replyEditForm-${r.replyNo}"
-					action="${pageContext.request.contextPath}/reply/modify"
-					method="post" style="display: none; margin-top: 10px;">
-					<input type="hidden" name="replyNo" value="${r.replyNo}"> <input
-						type="hidden" name="boardNo" value="${r.boardNo}">
-
-					<textarea name="content" class="reply-textarea" rows="3">${r.content}</textarea>
-
-					<div class="reply-form-actions">
-						<button type="submit" class="reply-btn reply-btn-primary"
-							onclick="return confirm('댓글을 수정할까요?');">저장</button>
-
-						<button type="button"
-							class="reply-btn reply-btn-cancel btn-reply-cancel"
-							data-replyno="${r.replyNo}">취소</button>
-					</div>
-				</form>
+				</c:if>
 			</sec:authorize>
 		</div>
 	</c:forEach>
