@@ -122,7 +122,6 @@
 
 			<div class="reply-content">${r.content}</div>
 
-			<!-- 작성자에게만 수정/삭제/수정폼 보이게 -->
 			<sec:authorize access="isAuthenticated()">
 				<c:if test="${pinfo.username eq r.writer}">
 					<div class="reply-actions">
@@ -135,22 +134,20 @@
 							method="post">
 							<input type="hidden" name="replyNo" value="${r.replyNo}">
 							<input type="hidden" name="boardNo" value="${r.boardNo}">
-							<button type="submit" class="reply-btn reply-btn-danger"
-								onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+							<button type="submit" class="reply-btn reply-btn-danger">삭제</button>
 						</form>
 					</div>
 
 					<form class="reply-edit-form" id="replyEditForm-${r.replyNo}"
 						action="${pageContext.request.contextPath}/reply/modify"
-						method="post" style="display: none; margin-top: 10px;">
+						method="post">
 						<input type="hidden" name="replyNo" value="${r.replyNo}">
 						<input type="hidden" name="boardNo" value="${r.boardNo}">
 
 						<textarea name="content" class="reply-textarea" rows="3">${r.content}</textarea>
 
 						<div class="reply-form-actions">
-							<button type="submit" class="reply-btn reply-btn-primary"
-								onclick="return confirm('댓글을 수정할까요?');">저장</button>
+							<button type="submit" class="reply-btn reply-btn-primary">저장</button>
 
 							<button type="button"
 								class="reply-btn reply-btn-cancel btn-reply-cancel"
@@ -233,7 +230,7 @@
 				});
 			});
 
-	// 댓글 수정 폼 토글
+	// 댓글 수정 폼
 	$(document).on("click", ".btn-reply-edit", function() {
 		let replyNo = $(this).data("replyno");
 		$("#replyEditForm-" + replyNo).slideToggle(150);
@@ -243,5 +240,18 @@
 	$(document).on("click", ".btn-reply-cancel", function() {
 		let replyNo = $(this).data("replyno");
 		$("#replyEditForm-" + replyNo).slideUp(150);
+	});
+	// 댓글 삭제
+	$(document).on("submit", ".reply-inline-form", function(e) {
+		if (!confirm("정말 삭제하시겠습니까?")) {
+			e.preventDefault();
+		}
+	});
+
+	// 댓글 수정
+	$(document).on("submit", ".reply-edit-form", function(e) {
+		if (!confirm("댓글을 수정하시겠습니까?")) {
+			e.preventDefault();
+		}
 	});
 </script>

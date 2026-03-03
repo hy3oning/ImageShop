@@ -406,6 +406,11 @@ font[color="red"], .form-errors {
 }
 
 /* textarea */
+.reply-edit-form {
+	display: none;
+	margin-top: 10px
+}
+
 .reply-textarea {
 	width: 100%;
 	max-width: 100%;

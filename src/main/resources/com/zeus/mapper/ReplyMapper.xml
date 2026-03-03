@@ -22,7 +22,7 @@
 		UPD_DATE
 		FROM REPLY
 		WHERE BOARD_NO = #{boardNo}
-		ORDER BY REPLY_NO ASC
+		ORDER BY REPLY_NO DESC
 	</select>
 
 	<!-- 댓글 조회 -->
