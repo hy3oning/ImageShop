@@ -3,7 +3,6 @@ package com.zeus.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.zeus.domain.Reply;
@@ -37,17 +36,6 @@ public class ReplyServiceImpl implements ReplyService {
 
 	@Override
 	public void modify(Reply reply, String loginId) throws Exception {
-		Reply rp = mapper.read(reply.getReplyNo());
-		if (rp == null) {
-			throw new RuntimeException("댓글이 존재하지 않습니다.");
-		}
-		if (rp.getWriter() == null || loginId == null || !rp.getWriter().equals(loginId)) {
-			throw new AccessDeniedException("본인 댓글만 수정할 수 있습니다.");
-		}
-		// content 방어(빈댓글 수정 막고 싶으면 여기서)
-		if (reply.getContent() != null) {
-			reply.setContent(reply.getContent().trim());
-		}
 		mapper.modify(reply);
 	}
 }
