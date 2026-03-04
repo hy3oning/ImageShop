@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +26,8 @@ import com.zeus.domain.Board;
 import com.zeus.domain.Member;
 import com.zeus.service.BoardService;
 import com.zeus.service.ReplyService;
+
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/board")
@@ -55,9 +58,12 @@ public class BoardController {
 	// 게시글 등록 처리
 	@PostMapping("/register")
 	@PreAuthorize("hasRole('MEMBER')")
-	public String register(Board board, RedirectAttributes rttr, @AuthenticationPrincipal CustomUser customUser)
-			throws Exception {
+	public String register(@Valid @ModelAttribute Board board, BindingResult bindingResult, RedirectAttributes rttr,
+			@AuthenticationPrincipal CustomUser customUser) throws Exception {
 		board.setWriter(customUser.getMember().getUserId());
+		if (bindingResult.hasErrors()) {
+			return "board/register";
+		}
 		int count = service.register(board);
 		rttr.addFlashAttribute("msg", (count > 0) ? "SUCCESS" : "FAILED");
 		return "redirect:/board/list";

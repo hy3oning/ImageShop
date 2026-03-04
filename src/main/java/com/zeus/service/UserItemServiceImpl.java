@@ -38,8 +38,7 @@ public class UserItemServiceImpl implements UserItemService {
 		payCoin.setAmount(price);
 
 		int updated = coinMapper.pay(payCoin);
-		if (updated == 0)
-			throw new NotEnoughCoinException("코인이 부족합니다.");
+		if (updated == 0)  throw new NotEnoughCoinException("코인이 부족합니다.");
 
 		coinMapper.createPayHistory(payCoin);
 

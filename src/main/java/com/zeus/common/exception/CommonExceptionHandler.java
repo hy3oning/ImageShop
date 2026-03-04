@@ -24,7 +24,6 @@ public class CommonExceptionHandler {
 	}
 
 	// 본인 상품 예외 처리
-	// 본인 상품 예외 처리
 	@ExceptionHandler(NotMyItemException.class)
 	public String handleNotMyItemException(NotMyItemException ex, WebRequest request) {
 		log.warn("Not my Item", ex);
