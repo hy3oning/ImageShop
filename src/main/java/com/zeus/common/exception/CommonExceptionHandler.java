@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import com.zeus.exception.ItemNotFoundException;
 import com.zeus.exception.NotEnoughCoinException;
 import com.zeus.exception.NotMyItemException;
 
@@ -40,6 +41,13 @@ public class CommonExceptionHandler {
 		} else {
 			throw ex;
 		}
+	}
+
+	// 없는 아이템 번호
+	@ExceptionHandler(ItemNotFoundException.class)
+	public String handleItemNotFound(ItemNotFoundException ex) {
+		log.warn("Item not found", ex);
+		return "redirect:/item/notFound";
 	}
 
 	// 일반 예외 처리

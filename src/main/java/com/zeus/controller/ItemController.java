@@ -28,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.zeus.common.security.domain.CustomUser;
 import com.zeus.domain.Item;
 import com.zeus.domain.Member;
+import com.zeus.exception.ItemNotFoundException;
 import com.zeus.service.ItemService;
 import com.zeus.service.UserItemService;
 
@@ -92,8 +93,12 @@ public class ItemController {
 
 	// 상품 상세 페이지
 	@GetMapping("/read")
-	public String read(int itemId, Model model) throws Exception {
-		model.addAttribute("item", itemService.read(itemId));
+	public String read(@RequestParam int itemId, Model model) throws Exception {
+		var item = itemService.read(itemId);
+		if (item == null)
+			throw new ItemNotFoundException(itemId);
+
+		model.addAttribute("item", item);
 		return "item/read";
 	}
 
@@ -311,6 +316,11 @@ public class ItemController {
 	@GetMapping("/success")
 	public String success() throws Exception {
 		return "item/success";
+	}
+
+	@GetMapping("/notFound")
+	public String notFound() {
+		return "item/notFound"; // /WEB-INF/views/item/notFound.jsp
 	}
 
 }
